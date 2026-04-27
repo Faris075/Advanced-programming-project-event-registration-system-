@@ -1,0 +1,17 @@
+# ============================================================
+# application-local.properties
+#
+# Local developer overrides – NEVER commit this file.
+# Copy this example, rename to application-local.properties,
+# and fill in your own values.
+# ============================================================
+
+DB_USERNAME=root
+DB_PASSWORD=your_mysql_root_password
+
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=your_mailtrap_inbox_username
+MAIL_PASSWORD=your_mailtrap_inbox_password
+
+APP_SECRET=local-dev-secret-replace-me
