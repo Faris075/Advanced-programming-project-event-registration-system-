@@ -1,0 +1,268 @@
+:root {
+    --color-primary: #3366ff;
+    --color-bg: #f5f7fb;
+    --color-text: #1f2937;
+    --color-card-bg: #ffffff;
+    --color-border: #d1d5db;
+    --color-muted: #6b7280;
+    --color-danger: #dc2626;
+    --color-success: #16a34a;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex-wrap: wrap;
+}
+
+.brand {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links li {
+    display: inline;
+}
+
+.nav-links a,
+.logout-form .btn-link {
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+.logout-form {
+    display: inline;
+    margin: 0;
+}
+
+.btn-link {
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.page-header {
+    margin-bottom: 2rem;
+}
+
+.page-header h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(2rem, 2.5vw, 3rem);
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.event-card,
+.event-detail,
+.registration-form {
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.05);
+}
+
+.event-card h2,
+.event-detail-header h1 {
+    margin: 0 0 0.75rem;
+}
+
+.event-meta,
+.event-location,
+.event-price,
+.event-capacity {
+    margin: 0.35rem 0;
+    color: var(--color-muted);
+}
+
+.event-status-panel {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.badge-sold-out {
+    background: rgba(220, 38, 38, 0.12);
+    color: var(--color-danger);
+}
+
+.badge-available {
+    background: rgba(22, 163, 74, 0.12);
+    color: var(--color-success);
+}
+
+.btn,
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 700;
+    transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.btn {
+    background: var(--color-primary);
+    color: white;
+    border: 1px solid transparent;
+}
+
+.btn:hover,
+.btn-secondary:hover {
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+    color: var(--color-primary);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"] {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: #ffffff;
+    color: var(--color-text);
+    margin: 0.5rem 0 1rem;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(51, 102, 255, 0.12);
+}
+
+.form-row {
+    margin-bottom: 1rem;
+}
+
+.event-detail-header {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.event-description {
+    margin-top: 1.75rem;
+}
+
+.event-description h2,
+.registration-form h2 {
+    margin-top: 0;
+}
+
+.waitlist-message {
+    margin: 1rem 0;
+    color: var(--color-muted);
+}
+
+.pagination {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.empty-state {
+    padding: 2rem;
+    text-align: center;
+    color: var(--color-muted);
+    border: 1px dashed var(--color-border);
+    border-radius: 16px;
+    background: #ffffff;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: #0f172a;
+        --color-text: #e2e8f0;
+        --color-card-bg: #1e293b;
+        --color-border: #334155;
+        --color-muted: #94a3b8;
+    }
+    body {
+        background: var(--color-bg);
+    }
+    header {
+        background: #111827;
+        border-color: #334155;
+    }
+    .event-card,
+    .event-detail,
+    .registration-form,
+    .empty-state {
+        background: var(--color-card-bg);
+        border-color: var(--color-border);
+    }
+    .btn-secondary {
+        background: #1e293b;
+        border-color: #334155;
+        color: #dbeafe;
+    }
+}

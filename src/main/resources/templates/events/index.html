@@ -1,0 +1,31 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="layout :: content('Events', ${body=~{::pageBody}})">
+<div th:fragment="pageBody">
+    <section class="page-header">
+        <h1>Upcoming Events</h1>
+        <p>Browse published events and register before spots fill up.</p>
+    </section>
+
+    <div class="events-grid" th:if="${events.content.size() > 0}">
+        <div th:each="event : ${events.content}" class="event-card">
+            <h2 th:text="${event.title}">Event Title</h2>
+            <p class="event-meta" th:text="${#temporals.format(event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</p>
+            <p class="event-location" th:text="${event.location}">Location</p>
+            <p class="event-price" th:text="${event.price != null && event.price.compareTo(T(java.math.BigDecimal).ZERO) > 0 ? '$' + event.price : 'Free'}">Free</p>
+            <p class="event-capacity">Capacity: <span th:text="${event.capacity}">100</span> spots</p>
+            <a th:href="@{/events/{id}(id=${event.id})}" class="btn">View Details</a>
+        </div>
+    </div>
+
+    <div class="empty-state" th:if="${events.content.size() == 0}">
+        <p>No public events are available right now. Please check back later.</p>
+    </div>
+
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a th:href="@{/events(page=${currentPage - 1})}" th:if="${currentPage > 0}" class="btn-secondary">Previous</a>
+        <span>Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
+        <a th:href="@{/events(page=${currentPage + 1})}" th:if="${currentPage + 1 < totalPages}" class="btn-secondary">Next</a>
+    </div>
+</div>
+</html>

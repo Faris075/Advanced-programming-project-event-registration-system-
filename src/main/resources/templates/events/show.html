@@ -1,0 +1,47 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="layout :: content(${event.title}, ${body=~{::pageBody}})">
+<div th:fragment="pageBody">
+    <section class="event-detail">
+        <div class="event-detail-header">
+            <div>
+                <h1 th:text="${event.title}">Event Title</h1>
+                <p class="event-meta" th:text="${#temporals.format(event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</p>
+                <p class="event-location" th:text="${event.location}">Location</p>
+            </div>
+            <div class="event-status-panel">
+                <p class="event-price" th:text="${event.price != null && event.price.compareTo(T(java.math.BigDecimal).ZERO) > 0 ? '$' + event.price : 'Free'}">Free</p>
+                <p><strong>Capacity:</strong> <span th:text="${event.capacity}">100</span></p>
+                <p th:if="${isSoldOut}" class="badge badge-sold-out">Sold Out</p>
+                <p th:unless="${isSoldOut}" class="badge badge-available" th:text="${spotsLeft} + ' spots left'">12 spots left</p>
+            </div>
+        </div>
+
+        <div class="event-description">
+            <h2>Description</h2>
+            <p th:text="${event.description}">Event description</p>
+        </div>
+
+        <div class="waitlist-message" th:if="${isSoldOut}">
+            <p th:text="${waitlistCount} + ' people on waitlist'">12 people on waitlist</p>
+        </div>
+
+        <div class="registration-form">
+            <h2 th:text="${isSoldOut ? 'Join the waitlist' : 'Register now'}">Register now</h2>
+            <form th:action="@{/register/{id}(id=${event.id})}" method="post" th:object="${form}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="form-row">
+                    <input type="text" th:field="*{name}" placeholder="Full Name" required />
+                </div>
+                <div class="form-row">
+                    <input type="email" th:field="*{email}" placeholder="Email" required />
+                </div>
+                <div class="form-row">
+                    <input type="tel" th:field="*{phone}" placeholder="Phone (optional)" />
+                </div>
+                <button type="submit" class="btn" th:text="${isSoldOut ? 'Join Waitlist' : 'Register Now'}">Register</button>
+            </form>
+        </div>
+    </section>
+</div>
+</html>

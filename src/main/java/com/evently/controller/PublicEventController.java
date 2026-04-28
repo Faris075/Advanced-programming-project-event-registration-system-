@@ -1,11 +1,17 @@
 package com.evently.controller;
 
+import com.evently.dto.RegistrationFormDto;
+import com.evently.exception.EventNotFoundException;
+import com.evently.model.Event;
 import com.evently.model.EventStatus;
 import com.evently.repository.EventRepository;
 import com.evently.repository.RegistrationRepository;
+import com.evently.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,38 +24,21 @@ import org.springframework.web.bind.annotation.RequestParam;
  * No authentication required for either endpoint.
  *
  * OWNER: Mohamed Ehab
- *
- * TODO (Ehab):
- *   1. GET /events — fetch paginated PUBLISHED events, pass page to model.
- *   2. GET /events/{id} — load single event; 404 if not found or not PUBLISHED.
- *      Pass to model: confirmedCount, remainingSpots, isFullyBooked,
- *      isAlreadyRegistered (check against logged-in user if authenticated).
  */
 @Controller
 @RequestMapping("/events")
+@RequiredArgsConstructor
 public class PublicEventController {
 
     private static final int PAGE_SIZE = 10;
 
     private final EventRepository        eventRepository;
     private final RegistrationRepository registrationRepository;
+    private final UserRepository         userRepository;
 
-    public PublicEventController(EventRepository eventRepository,
-                                 RegistrationRepository registrationRepository) {
-        this.eventRepository        = eventRepository;
-        this.registrationRepository = registrationRepository;
-    }
-
-    /**
-     * TODO (Ehab): Implement the events listing.
-     *
-     * - Default page = 0, sorted by dateTime ASC.
-     * - Pass to model: events (Page<Event>), currentPage, totalPages.
-     * - Template: events/index.html
-     */
     @GetMapping
     public String listEvents(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<?> events = eventRepository.findByStatusOrderByDateTimeAsc(
+        Page<Event> events = eventRepository.findByStatusOrderByDateTimeAsc(
                 EventStatus.PUBLISHED,
                 PageRequest.of(page, PAGE_SIZE, Sort.by("dateTime").ascending())
         );
@@ -59,18 +48,33 @@ public class PublicEventController {
         return "events/index";
     }
 
-    /**
-     * TODO (Ehab): Implement the event detail page.
-     *
-     * - Throw EventNotFoundException (→ 404) if event doesn't exist or isn't PUBLISHED.
-     * - Compute confirmedCount = eventRepository.countConfirmedRegistrations(id).
-     * - Compute remainingSpots = event.getCapacity() - confirmedCount (min 0).
-     * - Check isAlreadyRegistered by looking up the authenticated user's attendee record.
-     * - Template: events/show.html
-     */
     @GetMapping("/{id}")
-    public String showEvent(@PathVariable Long id, Model model) {
-        // TODO (Ehab): implement
+    public String showEvent(@PathVariable Long id, Model model, Authentication authentication) {
+        Event event = eventRepository.findById(id)
+            .orElseThrow(() -> new EventNotFoundException("Event not found: " + id));
+
+        if (event.getStatus() != EventStatus.PUBLISHED) {
+            return "redirect:/events";
+        }
+
+        long confirmedCount = eventRepository.countConfirmedRegistrations(id);
+        long waitlistCount = registrationRepository.countWaitlisted(id);
+        boolean isSoldOut = confirmedCount >= event.getCapacity();
+
+        model.addAttribute("event", event);
+        model.addAttribute("confirmedCount", confirmedCount);
+        model.addAttribute("spotsLeft", Math.max(0, event.getCapacity() - confirmedCount));
+        model.addAttribute("isSoldOut", isSoldOut);
+        model.addAttribute("waitlistCount", waitlistCount);
+        model.addAttribute("form", new RegistrationFormDto());
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String email = authentication.getName();
+            userRepository.findByEmail(email).ifPresent(user -> {
+                model.addAttribute("isUserRegistered", false);
+            });
+        }
+
         return "events/show";
     }
 }

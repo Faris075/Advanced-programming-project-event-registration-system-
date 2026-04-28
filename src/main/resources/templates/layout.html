@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle != null ? pageTitle + ' — Evently' : 'Evently'}">Evently</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+</head>
+<body>
+<header>
+    <nav class="navbar">
+        <a class="brand" th:href="@{/}">Evently</a>
+        <ul class="nav-links">
+            <li><a th:href="@{/events}">Events</a></li>
+            <li sec:authorize="isAuthenticated()">
+                <a th:href="@{/dashboard}">My Registrations</a>
+            </li>
+            <li sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin}">Admin</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <a th:href="@{/profile}">Profile</a>
+            </li>
+            <li sec:authorize="isAnonymous()">
+                <a th:href="@{/auth/login}">Login</a>
+            </li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/auth/logout}" method="post" class="logout-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn-link">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</header>
+<main class="container" th:fragment="content(pageTitle, body)">
+    <div th:insert="${body}"></div>
+</main>
+<footer>
+    <p>© 2024 Evently</p>
+</footer>
+</body>
+</html>
