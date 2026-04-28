@@ -21,7 +21,11 @@
 
     <properties>
         <java.version>25</java.version>
-        <maven.compiler.release>25</maven.compiler.release>
+        <!-- Compile to Java 21 bytecode: Spring Framework 6.1.x bundles ASM that supports
+        up to Java 23 and cannot read Java 25 class files (version 69). The Java 25 JVM
+        runs Java 21 bytecode without any issue. Switch to Spring Boot 3.3+ (Spring 6.2+)
+        when you need to use Java 22+ language features. -->
+        <maven.compiler.release>21</maven.compiler.release>
         <!-- Lombok 1.18.36+ is required for Java 21+ / Java 26 support -->
         <lombok.version>1.18.38</lombok.version>
         <!-- Spring Boot uses start-class to skip bytecode scanning for main class -->
@@ -86,6 +90,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- MariaDB JDBC driver (XAMPP bundles MariaDB, not MySQL) -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Lombok – reduces boilerplate (@Getter, @Setter, @Builder …) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -146,6 +157,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
