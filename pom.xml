@@ -24,6 +24,8 @@
         <maven.compiler.release>25</maven.compiler.release>
         <!-- Lombok 1.18.36+ is required for Java 21+ / Java 26 support -->
         <lombok.version>1.18.38</lombok.version>
+        <!-- Spring Boot uses start-class to skip bytecode scanning for main class -->
+        <start-class>com.evently.EventlyApplication</start-class>
         <!-- CVE fixes: override Spring Boot BOM managed versions -->
         <tomcat.version>10.1.54</tomcat.version>
         <thymeleaf.version>3.1.5.RELEASE</thymeleaf.version>
