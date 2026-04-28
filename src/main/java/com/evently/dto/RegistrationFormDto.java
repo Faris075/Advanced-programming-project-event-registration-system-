@@ -11,18 +11,51 @@ import lombok.Setter;
  *
  * OWNER: Mohamed Ahmed
  */
+
+//  public class RegristrationFormDto{
+
+//  Private String Name;
+
+//  Private String Email;
+
+ 
+// pulic RegistrationFormDto{
+
+//     this.Name = "";
+//     this.Email = "";
+
+
+// }
+
+
+// public String getName(){
+//     return Name;
+// }
+
+// public String getEmail(){
+//     return Email;
+// }
+// public void setName(String name){
+//     this.Name = name;
+// }
+// public void setEmail(String email){
+//     this.Email = email;
+// }
+
+
+
+//  }
+
+
+
 @Getter
 @Setter
 public class RegistrationFormDto {
 
-    @NotBlank(message = "Name is required.")
+    @NotBlank(message = "Name is required")
     private String name;
 
-    @NotBlank(message = "Email is required.")
-    @Email(message = "Please enter a valid email address.")
+    @NotBlank(message = "Email is required")
+    @Email(message = "Please enter a valid email address")
     private String email;
-
-    /** Optional phone – validated as a basic international-friendly pattern if provided. */
-    @Pattern(regexp = "^[+]?[0-9 \\-().]{7,20}$", message = "Please enter a valid phone number.")
-    private String phone;
 }
