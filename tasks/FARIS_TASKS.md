@@ -13,9 +13,9 @@ You set up the entire project skeleton, database, and data layer. No one can sta
 ---
 
 ## Prerequisites
-- Java 17 installed (`java -version`)
+- Java 21+ installed (`java -version`) — project runs on Java 25 JVM, compiled to Java 21 bytecode
 - Maven 3.8+ installed (`mvn -version`)
-- MySQL 8.0 running locally
+- MariaDB 10.4 running locally (bundled with XAMPP — start via XAMPP Control Panel)
 - IntelliJ IDEA (recommended) or VS Code with Java Extension Pack
 - Git configured with your GitHub account
 
@@ -27,7 +27,7 @@ You set up the entire project skeleton, database, and data layer. No one can sta
 - Go to [https://start.spring.io](https://start.spring.io) and generate a project with:
   - **Group:** `com.evently`
   - **Artifact:** `evently`
-  - **Java:** 17
+  - **Java:** 21
   - **Packaging:** Jar
   - **Dependencies:** Spring Web, Spring Security, Spring Data JPA, Thymeleaf, Thymeleaf Extras Spring Security 6, MySQL Driver, Spring Boot DevTools, Lombok, Spring Boot Starter Mail, Validation
 - Download, unzip, and push to the `feature/faris-setup` branch
@@ -36,25 +36,25 @@ You set up the entire project skeleton, database, and data layer. No one can sta
 ### Step 2 — Configuration files
 - Edit `src/main/resources/application.properties`:
   ```properties
-  spring.datasource.url=jdbc:mysql://localhost:3306/evently_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+  spring.datasource.url=jdbc:mariadb://localhost:3306/evently_db?useSSL=false&serverTimezone=UTC
   spring.datasource.username=${DB_USERNAME:root}
   spring.datasource.password=${DB_PASSWORD:}
-  spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+  spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
   spring.jpa.hibernate.ddl-auto=validate
   spring.jpa.show-sql=true
-  spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
   spring.jpa.open-in-view=false
   spring.thymeleaf.cache=false
   evently.security.remember-me-key=${APP_SECRET:evently-dev-secret}
   ```
+  > **Note:** No explicit `hibernate.dialect` is needed — Hibernate auto-detects MariaDB from the driver.
 - Create `src/main/resources/application-local.properties` (add this filename to `.gitignore`):
   ```properties
   DB_USERNAME=root
   DB_PASSWORD=your_password_here
   ```
 
-### Step 3 — Create the MySQL database
-Run these SQL commands in MySQL Workbench or the CLI:
+### Step 3 — Create the MariaDB database
+Run these SQL commands in HeidiSQL/DBeaver or the MariaDB CLI:
 ```sql
 CREATE DATABASE IF NOT EXISTS evently_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE evently_db;

@@ -1,7 +1,7 @@
 # Evently — Event Registration System
 ## Developer Instructions & Task Distribution
 
-> **Stack:** Java 17 · Spring Boot 3.x · Spring MVC · Spring Security · Spring Data JPA · Hibernate · MySQL 8 · Thymeleaf · Maven
+> **Stack:** Java 25 (bytecode 21) · Spring Boot 3.x · Spring MVC · Spring Security · Spring Data JPA · Hibernate · MariaDB 10.4 · Thymeleaf · Maven
 > **Team:** Faris · Alei · Mohamed Morsy · Mohamed Ehab · Mohamed Ahmed · Islam
 
 ---
@@ -216,7 +216,7 @@ main
   - Spring Data JPA
   - Thymeleaf
   - Thymeleaf Extras Spring Security 6
-  - MySQL Driver
+  - MariaDB Driver (`org.mariadb.jdbc:mariadb-java-client`)
   - Spring Boot DevTools
   - Lombok
   - Spring Boot Mail
@@ -230,19 +230,19 @@ main
 
 #### Phase 1 — Database Setup
 
-- [ ] Create the MySQL database `evently_db` using the exact schema defined in [Database Schema](#database-schema)
+- [ ] Create the MariaDB database `evently_db` using the exact schema defined in [Database Schema](#database-schema)
 - [ ] Write the schema as a plain `schema.sql` file in `src/main/resources/` so any developer running the app fresh can execute it
 - [ ] Configure `application.properties` with the JDBC connection:
   ```properties
-  spring.datasource.url=jdbc:mysql://localhost:3306/evently_db?useSSL=false&serverTimezone=UTC
+  spring.datasource.url=jdbc:mariadb://localhost:3306/evently_db?useSSL=false&serverTimezone=UTC
   spring.datasource.username=${DB_USERNAME}
   spring.datasource.password=${DB_PASSWORD}
-  spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+  spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
   spring.jpa.hibernate.ddl-auto=validate
   spring.jpa.show-sql=true
   spring.jpa.properties.hibernate.format_sql=true
-  spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
   ```
+  > No explicit `hibernate.dialect` — auto-detected from the MariaDB driver.
 
 #### Phase 2 — JPA Entities
 
@@ -737,8 +737,8 @@ This is the most critical and complex slice of the system. Read the non-function
 ### Environment Variables
 | Variable | Description | Default (dev) |
 |----------|-------------|---------------|
-| `DB_USERNAME` | MySQL username | `root` |
-| `DB_PASSWORD` | MySQL password | *(your local password)* |
+| `DB_USERNAME` | MariaDB username | `root` |
+| `DB_PASSWORD` | MariaDB password | *(blank for XAMPP default)* |
 | `MAIL_HOST` | SMTP host | `smtp.mailtrap.io` |
 | `MAIL_PORT` | SMTP port | `2525` |
 | `MAIL_USERNAME` | SMTP username | *(Mailtrap inbox)* |

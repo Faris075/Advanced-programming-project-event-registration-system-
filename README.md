@@ -65,13 +65,13 @@ A full-stack Java web application for event discovery, attendee registration, wa
 
 | Layer | Technology |
 |-------|-----------|
-| Language | Java 17 |
+| Language | Java 25 (bytecode target: 21) |
 | Framework | Spring Boot 3.x |
 | Web | Spring MVC (`DispatcherServlet`) |
 | Security | Spring Security 6 |
 | ORM | Spring Data JPA + Hibernate |
 | View Engine | Thymeleaf 3 + Thymeleaf Extras Spring Security |
-| Database | MySQL 8.0 |
+| Database | MariaDB 10.4 (via XAMPP) |
 | Build | Apache Maven |
 | Email | Spring Boot Mail (JavaMailSender) |
 | Testing | JUnit 5, Mockito, MockMvc, H2 (in-memory) |
@@ -94,9 +94,9 @@ A full-stack Java web application for event discovery, attendee registration, wa
 
 ## Prerequisites
 
-- **Java 17+** — `java -version`
+- **Java 21+** — `java -version` (project runs on Java 25 JVM, compiled to Java 21 bytecode)
 - **Maven 3.8+** — `mvn -version`
-- **MySQL 8.0+** — running locally or via Docker (`docker run -p 3306:3306 -e MYSQL_ROOT_PASSWORD=secret mysql:8`)
+- **MariaDB 10.4+** — bundled with [XAMPP](https://www.apachefriends.org/); start via XAMPP Control Panel or `C:\xampp\mysql\bin\mysqld.exe --defaults-file=C:\xampp\mysql\bin\my.ini --standalone`
 - **Git**
 - (Optional) A Mailtrap.io account for email testing in development
 
@@ -106,10 +106,10 @@ A full-stack Java web application for event discovery, attendee registration, wa
 
 ### 1. Create the database and tables
 
-Connect to MySQL and run the schema file:
+Connect to MariaDB and run the schema file:
 
 ```bash
-mysql -u root -p < src/main/resources/schema.sql
+mysql -u root < src/main/resources/schema.sql
 ```
 
 Or run the statements manually:
@@ -222,15 +222,15 @@ mvn clean install -DskipTests
 ## Running the Application
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=local
+mvn spring-boot:run
 ```
 
-The application starts at **http://localhost:8080**.
+The application starts at **http://localhost:8080**. The `local` profile is activated automatically via `spring.profiles.active=local` in `application.properties`.
 
 To run with a specific port:
 
 ```bash
-mvn spring-boot:run -Dspring-boot.run.profiles=local -Dserver.port=9090
+mvn spring-boot:run -Dserver.port=9090
 ```
 
 ---
@@ -283,7 +283,7 @@ The `DataSeeder` inserts a default admin account on the first startup if no admi
 src/
 ├── main/
 │   ├── java/com/evently/
-│   │   ├── EvidentlyApplication.java       ← main class (@EnableScheduling, @EnableAsync)
+│   │   ├── EventlyApplication.java          ← main class (@EnableScheduling, @EnableAsync)
 │   │   ├── config/
 │   │   │   ├── SecurityConfig.java         ← Spring Security rules + UserDetailsService
 │   │   │   ├── WebMvcConfig.java           ← Admin interceptor registration
@@ -459,8 +459,8 @@ CI runs these automatically on every push and pull request via GitHub Actions (`
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `DB_USERNAME` | MySQL database username | `root` |
-| `DB_PASSWORD` | MySQL database password | `secret` |
+| `DB_USERNAME` | MariaDB database username | `root` |
+| `DB_PASSWORD` | MariaDB database password | *(blank for XAMPP default)* |
 | `MAIL_HOST` | SMTP server host | `smtp.mailtrap.io` |
 | `MAIL_PORT` | SMTP server port | `2525` |
 | `MAIL_USERNAME` | SMTP username | *(from Mailtrap inbox)* |
@@ -474,6 +474,6 @@ Set these either in `application-local.properties` (local dev, gitignored) or as
 ## Recommended Dev Tools
 
 - **IntelliJ IDEA** (Community or Ultimate) — excellent Spring Boot and Thymeleaf support
-- **TablePlus** or **DBeaver** — GUI MySQL client
+- **TablePlus** or **DBeaver** — GUI MySQL/MariaDB client
 - **Mailtrap.io** — free email sandbox for testing outbound emails
 - **Postman** — useful for testing API endpoints manually before views are built
