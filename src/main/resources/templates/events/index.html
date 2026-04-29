@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
-      th:replace="layout :: content('Events', ${body=~{::pageBody}})">
+      th:replace="~{layout :: content('Events', ~{::pageBody})}">
 <div th:fragment="pageBody">
     <section class="page-header">
         <h1>Upcoming Events</h1>
