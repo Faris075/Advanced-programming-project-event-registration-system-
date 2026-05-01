@@ -1,17 +1,20 @@
 package com.evently;
 
-import com.evently.model.*;
-import com.evently.repository.EventRepository;
-import com.evently.repository.UserRepository;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.evently.model.Event;
+import com.evently.model.EventStatus;
+import com.evently.model.User;
+import com.evently.repository.EventRepository;
+import com.evently.repository.UserRepository;
 
 /**
  * DataSeeder runs once at startup and populates the database with:
@@ -45,12 +48,35 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        seedSuperAdmin();
         seedAdminUser();
         seedSampleEvents();
     }
 
     // ------------------------------------------------------------------
-    // Admin user
+    // Super admin — Faris (sole super admin; promotes/demotes other admins)
+    // ------------------------------------------------------------------
+    private void seedSuperAdmin() {
+        if (userRepository.existsByEmail("Farisnabil075@gmail.com")) {
+            log.info("DataSeeder: super admin (Faris) already exists — skipping.");
+            return;
+        }
+
+        User superAdmin = User.builder()
+                .name("Faris")
+                .email("Farisnabil075@gmail.com")
+                .password(passwordEncoder.encode("admin@123"))
+                .isAdmin(true)
+                .isSuperAdmin(true)
+                .currencyPreference("USD")
+                .build();
+
+        userRepository.save(superAdmin);
+        log.info("DataSeeder: super admin created (Farisnabil075@gmail.com).");
+    }
+
+    // ------------------------------------------------------------------
+    // Default admin user
     // ------------------------------------------------------------------
     private void seedAdminUser() {
         if (userRepository.existsByEmail("admin@evently.com")) {

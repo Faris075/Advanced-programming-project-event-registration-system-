@@ -24,17 +24,17 @@ You set up the entire project skeleton, database, and data layer. No one can sta
 ## Step-by-Step Tasks
 
 ### Step 1 — Bootstrap the Maven project
-- Go to [https://start.spring.io](https://start.spring.io) and generate a project with:
-  - **Group:** `com.evently`
-  - **Artifact:** `evently`
-  - **Java:** 21
-  - **Packaging:** Jar
-  - **Dependencies:** Spring Web, Spring Security, Spring Data JPA, Thymeleaf, Thymeleaf Extras Spring Security 6, MySQL Driver, Spring Boot DevTools, Lombok, Spring Boot Starter Mail, Validation
-- Download, unzip, and push to the `feature/faris-setup` branch
-- Invite the other 5 developers as GitHub collaborators
+- [x] Go to [https://start.spring.io](https://start.spring.io) and generate a project with:
+  - [x] **Group:** `com.evently`
+  - [x] **Artifact:** `evently`
+  - [x] **Java:** 21
+  - [x] **Packaging:** Jar
+  - [x] **Dependencies:** Spring Web, Spring Security, Spring Data JPA, Thymeleaf, Thymeleaf Extras Spring Security 6, MySQL Driver, Spring Boot DevTools, Lombok, Spring Boot Starter Mail, Validation
+- [x] Download, unzip, and push to the `feature/faris-setup` branch
+- [x] Invite the other 5 developers as GitHub collaborators
 
 ### Step 2 — Configuration files
-- Edit `src/main/resources/application.properties`:
+- [x] Edit `src/main/resources/application.properties`:
   ```properties
   spring.datasource.url=jdbc:mariadb://localhost:3306/evently_db?useSSL=false&serverTimezone=UTC
   spring.datasource.username=${DB_USERNAME:root}
@@ -47,7 +47,7 @@ You set up the entire project skeleton, database, and data layer. No one can sta
   evently.security.remember-me-key=${APP_SECRET:evently-dev-secret}
   ```
   > **Note:** No explicit `hibernate.dialect` is needed — Hibernate auto-detects MariaDB from the driver.
-- Create `src/main/resources/application-local.properties` (add this filename to `.gitignore`):
+- [x] Create `src/main/resources/application-local.properties` (add this filename to `.gitignore`):
   ```properties
   DB_USERNAME=root
   DB_PASSWORD=your_password_here
@@ -119,93 +119,95 @@ CREATE TABLE IF NOT EXISTS registrations (
 );
 ```
 
-Also save this as `src/main/resources/schema.sql` so any team member can run it.
+- [x] Run SQL commands in HeidiSQL/DBeaver or the MariaDB CLI (all 4 tables created)
+
+- [x] Also save this as `src/main/resources/schema.sql` so any team member can run it.
 
 ### Step 4 — Create the three enum types
-Create these three files in `src/main/java/com/evently/model/`:
+- [x] Create these three files in `src/main/java/com/evently/model/`:
 
-**`EventStatus.java`**
-```java
-package com.evently.model;
-public enum EventStatus { DRAFT, PUBLISHED, CANCELLED, COMPLETED }
-```
+  - [x] **`EventStatus.java`**
+  ```java
+  package com.evently.model;
+  public enum EventStatus { DRAFT, PUBLISHED, CANCELLED, COMPLETED }
+  ```
 
-**`RegistrationStatus.java`**
-```java
-package com.evently.model;
-public enum RegistrationStatus { CONFIRMED, WAITLISTED, CANCELLED }
-```
+  - [x] **`RegistrationStatus.java`**
+  ```java
+  package com.evently.model;
+  public enum RegistrationStatus { CONFIRMED, WAITLISTED, CANCELLED }
+  ```
 
-**`PaymentStatus.java`**
-```java
-package com.evently.model;
-public enum PaymentStatus { PENDING, PAID, REFUNDED }
-```
+  - [x] **`PaymentStatus.java`**
+  ```java
+  package com.evently.model;
+  public enum PaymentStatus { PENDING, PAID, REFUNDED }
+  ```
 
 ### Step 5 — Create the four JPA entities
-All four files go in `src/main/java/com/evently/model/`. Use `@Entity`, `@Table`, `@Id`, `@GeneratedValue`, `@Column`, `@Enumerated(EnumType.STRING)`, `@ManyToOne`, `@JoinColumn`. Use Lombok `@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder` on every entity.
+- [x] All four files go in `src/main/java/com/evently/model/`. Use `@Entity`, `@Table`, `@Id`, `@GeneratedValue`, `@Column`, `@Enumerated(EnumType.STRING)`, `@ManyToOne`, `@JoinColumn`. Use Lombok `@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder` on every entity.
 
-Required entities: **`User.java`**, **`Event.java`**, **`Attendee.java`**, **`Registration.java`**
+- [x] Required entities: **`User.java`**, **`Event.java`**, **`Attendee.java`**, **`Registration.java`**
 (Full field lists are in `DEVELOPER_INSTRUCTIONS.md` → Phase 2.)
 
-**Critical rule:** Use `@Column(name = "is_admin")` on the `isAdmin` boolean. Hibernate must know the DB column name.
+- [x] **Critical rule:** Use `@Column(name = "is_admin")` on the `isAdmin` boolean. Hibernate must know the DB column name.
 
 ### Step 6 — Create the four repository interfaces
-All four files go in `src/main/java/com/evently/repository/`. Each extends `JpaRepository<Entity, Long>`.
+- [x] All four files go in `src/main/java/com/evently/repository/`. Each extends `JpaRepository<Entity, Long>`.
 
-Key custom methods you must add (others will call these):
-- `UserRepository`: `findByEmail(String email)`, `existsByEmail(String email)`
-- `EventRepository`: `findByStatusOrderByDateTimeAsc(...)`, `findByStatusAndDateTimeBefore(...)`, `countConfirmedRegistrations(@Param("eventId") Long eventId)` — **use fully-qualified JPQL enum reference:** `com.evently.model.RegistrationStatus.CONFIRMED`, never string literals
-- `AttendeeRepository`: `findByEmail(String email)`
-- `RegistrationRepository`: `findByEventIdAndAttendeeId(...)`, `findWaitlistedByEventIdOrdered(...)` (use `com.evently.model.RegistrationStatus.WAITLISTED` in the JPQL), `findByIdWithLock(@Param("id") Long id)` with `@Lock(LockModeType.PESSIMISTIC_WRITE)`
+- [x] Key custom methods added (others will call these):
+  - [x] `UserRepository`: `findByEmail(String email)`, `existsByEmail(String email)`
+  - [x] `EventRepository`: `findByStatusOrderByDateTimeAsc(...)`, `findByStatusAndDateTimeBefore(...)`, `countConfirmedRegistrations(@Param("eventId") Long eventId)` — **use fully-qualified JPQL enum reference:** `com.evently.model.RegistrationStatus.CONFIRMED`, never string literals
+  - [x] `AttendeeRepository`: `findByEmail(String email)`
+  - [x] `RegistrationRepository`: `findByEventIdAndAttendeeId(...)`, `findWaitlistedByEventIdOrdered(...)` (use `com.evently.model.RegistrationStatus.WAITLISTED` in the JPQL), `findByIdWithLock(@Param("id") Long id)` with `@Lock(LockModeType.PESSIMISTIC_WRITE)`
 
 ### Step 7 — Create configuration beans
-- `src/main/java/com/evently/config/PasswordEncoderConfig.java` — `@Bean BCryptPasswordEncoder(12)`
-- `src/main/java/com/evently/config/WebMvcConfig.java` — implements `WebMvcConfigurer`, registers `AdminInterceptor` for `/admin/**`, registers static resource handlers
-- `src/main/java/com/evently/exception/GlobalControllerAdvice.java` — `@ControllerAdvice` with `@ExceptionHandler` for `EventNotFoundException` (→ `error/404`) and `Exception` (→ `error/500`)
+- [x] `src/main/java/com/evently/config/PasswordEncoderConfig.java` — `@Bean BCryptPasswordEncoder(12)`
+- [x] `src/main/java/com/evently/config/WebMvcConfig.java` — implements `WebMvcConfigurer`, registers `AdminInterceptor` for `/admin/**`, registers static resource handlers
+- [x] `src/main/java/com/evently/exception/GlobalControllerAdvice.java` — `@ControllerAdvice` with `@ExceptionHandler` for `EventNotFoundException` (→ `error/404`) and `Exception` (→ `error/500`)
 
 ### Step 8 — Create the DataSeeder
-- `src/main/java/com/evently/DataSeeder.java` — implements `CommandLineRunner`
-  - If `admin@evently.com` doesn't exist: insert admin user with BCrypt-encoded password `Admin@1234`, `isAdmin = true`
-  - If no events exist: insert 5 sample published events with `dateTime` = now + 7/14/30/45/60 days
-  - Must be idempotent (check before inserting, never insert twice)
+- [x] `src/main/java/com/evently/DataSeeder.java` — implements `CommandLineRunner`
+  - [x] If `admin@evently.com` doesn't exist: insert admin user with BCrypt-encoded password `Admin@1234`, `isAdmin = true`
+  - [x] If no events exist: insert 5 sample published events with `dateTime` = now + 7/14/30/45/60 days
+  - [x] Must be idempotent (check before inserting, never insert twice)
 
 ### Step 9 — Create the main application class
-- `src/main/java/com/evently/EventlyApplication.java`
-  - Annotate with `@SpringBootApplication`, `@EnableScheduling`, `@EnableAsync`
+- [x] `src/main/java/com/evently/EventlyApplication.java`
+  - [x] Annotate with `@SpringBootApplication`, `@EnableScheduling`, `@EnableAsync`
 
 ### Step 10 — Create error page stubs
-- `src/main/resources/templates/error/404.html`
-- `src/main/resources/templates/error/500.html`
-- `src/main/resources/templates/error/403.html`
+- [x] `src/main/resources/templates/error/404.html`
+- [x] `src/main/resources/templates/error/500.html`
+- [x] `src/main/resources/templates/error/403.html`
 
 ---
 
 ## Files You Own (create all of these)
 
-| File | Package |
-|------|---------|
-| `EventlyApplication.java` | `com.evently` |
-| `DataSeeder.java` | `com.evently` |
-| `User.java` | `com.evently.model` |
-| `Event.java` | `com.evently.model` |
-| `Attendee.java` | `com.evently.model` |
-| `Registration.java` | `com.evently.model` |
-| `EventStatus.java` | `com.evently.model` |
-| `RegistrationStatus.java` | `com.evently.model` |
-| `PaymentStatus.java` | `com.evently.model` |
-| `UserRepository.java` | `com.evently.repository` |
-| `EventRepository.java` | `com.evently.repository` |
-| `AttendeeRepository.java` | `com.evently.repository` |
-| `RegistrationRepository.java` | `com.evently.repository` |
-| `PasswordEncoderConfig.java` | `com.evently.config` |
-| `WebMvcConfig.java` | `com.evently.config` |
-| `GlobalControllerAdvice.java` | `com.evently.exception` |
-| `EventNotFoundException.java` | `com.evently.exception` |
-| `DuplicateRegistrationException.java` | `com.evently.exception` |
-| `schema.sql` | `src/main/resources/` |
-| `application.properties` | `src/main/resources/` |
-| `error/404.html`, `403.html`, `500.html` | `src/main/resources/templates/error/` |
+| File | Package | Status |
+|------|---------|--------|
+| `EventlyApplication.java` | `com.evently` | ✅ Done |
+| `DataSeeder.java` | `com.evently` | ✅ Done |
+| `User.java` | `com.evently.model` | ✅ Done |
+| `Event.java` | `com.evently.model` | ✅ Done |
+| `Attendee.java` | `com.evently.model` | ✅ Done |
+| `Registration.java` | `com.evently.model` | ✅ Done |
+| `EventStatus.java` | `com.evently.model` | ✅ Done |
+| `RegistrationStatus.java` | `com.evently.model` | ✅ Done |
+| `PaymentStatus.java` | `com.evently.model` | ✅ Done |
+| `UserRepository.java` | `com.evently.repository` | ✅ Done |
+| `EventRepository.java` | `com.evently.repository` | ✅ Done |
+| `AttendeeRepository.java` | `com.evently.repository` | ✅ Done |
+| `RegistrationRepository.java` | `com.evently.repository` | ✅ Done |
+| `PasswordEncoderConfig.java` | `com.evently.config` | ✅ Done |
+| `WebMvcConfig.java` | `com.evently.config` | ✅ Done |
+| `GlobalControllerAdvice.java` | `com.evently.exception` | ✅ Done |
+| `EventNotFoundException.java` | `com.evently.exception` | ✅ Done |
+| `DuplicateRegistrationException.java` | `com.evently.exception` | ✅ Done |
+| `schema.sql` | `src/main/resources/` | ✅ Done |
+| `application.properties` | `src/main/resources/` | ✅ Done |
+| `error/404.html`, `403.html`, `500.html` | `src/main/resources/templates/error/` | ✅ Done |
 
 ---
 

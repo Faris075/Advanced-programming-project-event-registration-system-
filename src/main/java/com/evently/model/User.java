@@ -42,6 +42,14 @@ public class User {
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin = false;
 
+    /**
+     * true = super admin; only one super admin exists in the system.
+     * Super admins have all admin privileges plus the exclusive ability
+     * to promote or demote other users to/from the admin role.
+     */
+    @Column(name = "is_super_admin", nullable = false)
+    private boolean isSuperAdmin = false;
+
     /** Free-text question chosen by the user during setup. */
     @Column(name = "security_question", length = 500)
     private String securityQuestion;

@@ -11,6 +11,7 @@ USE evently_db;
 -- ----------------------------------------------------------------
 -- TABLE: users
 -- Stores registered accounts. is_admin flag controls admin access.
+-- is_super_admin: only one super admin exists; can promote/demote admins.
 -- ----------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL, -- BCrypt hash; never plain text
     is_admin TINYINT(1) NOT NULL DEFAULT 0,
+    is_super_admin TINYINT(1) NOT NULL DEFAULT 0,
     security_question VARCHAR(500) NULL,
     security_answer VARCHAR(255) NULL, -- BCrypt hash
     currency_preference VARCHAR(10) NOT NULL DEFAULT 'USD',
@@ -72,6 +74,7 @@ CREATE TABLE IF NOT EXISTS attendees (
 -- Tracks booking lifecycle, payment status, and waitlist position.
 -- ----------------------------------------------------------------
 
+
 CREATE TABLE IF NOT EXISTS registrations (
     id                  BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     event_id            BIGINT UNSIGNED NOT NULL,
@@ -88,6 +91,7 @@ CREATE TABLE IF NOT EXISTS registrations (
     CONSTRAINT fk_reg_attendee  FOREIGN KEY (attendee_id) REFERENCES attendees(id) ON DELETE CASCADE,
 
 -- DB-level duplicate prevention (second layer after service-level check)
+
 UNIQUE KEY uq_event_attendee (event_id, attendee_id),
 
     INDEX idx_registrations_event_id    (event_id),

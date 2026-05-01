@@ -60,12 +60,29 @@ public class SecurityConfig {
             com.evently.model.User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new UsernameNotFoundException("No user with email: " + email));
 
-            String role = user.isAdmin() ? "ROLE_ADMIN" : "ROLE_USER";
+            // Super admin gets ROLE_SUPER_ADMIN + ROLE_ADMIN + ROLE_USER.
+            // Regular admin gets ROLE_ADMIN + ROLE_USER.
+            // Everyone else gets ROLE_USER only.
+            List<SimpleGrantedAuthority> authorities;
+            if (user.isSuperAdmin()) {
+                authorities = List.of(
+                        new SimpleGrantedAuthority("ROLE_SUPER_ADMIN"),
+                        new SimpleGrantedAuthority("ROLE_ADMIN"),
+                        new SimpleGrantedAuthority("ROLE_USER")
+                );
+            } else if (user.isAdmin()) {
+                authorities = List.of(
+                        new SimpleGrantedAuthority("ROLE_ADMIN"),
+                        new SimpleGrantedAuthority("ROLE_USER")
+                );
+            } else {
+                authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            }
 
             return new org.springframework.security.core.userdetails.User(
                     user.getEmail(),
                     user.getPassword(),
-                    List.of(new SimpleGrantedAuthority(role))
+                    authorities
             );
         };
     }
@@ -97,6 +114,9 @@ public class SecurityConfig {
                         "/auth/**",
                         "/css/**", "/js/**", "/images/**",
                         "/error").permitAll()
+                // Super-admin-only: promote/demote other users
+                .requestMatchers("/admin/users/*/promote", "/admin/users/*/demote").hasRole("SUPER_ADMIN")
+                // Admin (and super admin, who also holds ROLE_ADMIN): rest of admin area
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 )
