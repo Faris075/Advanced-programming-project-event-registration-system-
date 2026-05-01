@@ -19,6 +19,12 @@ public class RegistrationFormDto {
     @Email(message = "Please enter a valid email address.")
     private String email;
 
+    /** Optional phone number shown on the registration form. */
+    private String phone;
+
+    /** Optional company / organisation name. */
+    private String company;
+
     public RegistrationFormDto(String name, String email) {
         this.name = name;
         this.email = email;
@@ -40,7 +46,19 @@ public class RegistrationFormDto {
         this.email = email;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getCompany() {
+        return company;
+    }
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
 }
-
-
-

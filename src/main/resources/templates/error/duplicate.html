@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<!-- Shown when an attendee tries to register for an event they are already registered for.
+     GlobalControllerAdvice maps DuplicateRegistrationException → this view.
+     OWNER: Faris -->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Already Registered | Evently</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}"/>
+</head>
+<body>
+<div class="error-container" style="text-align:center; padding:80px 20px;">
+    <h1>409</h1>
+    <h2>Already Registered</h2>
+    <!-- Display server-side message or a sensible default. -->
+    <p th:text="${message != null ? message : 'You are already registered for this event.'}">
+        You are already registered for this event.
+    </p>
+    <a th:href="@{/events}">Back to Events</a>
+</div>
+</body>
+</html>
