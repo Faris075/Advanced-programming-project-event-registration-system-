@@ -25,6 +25,9 @@ public class RegistrationFormDto {
     /** Optional company / organisation name. */
     private String company;
 
+    public RegistrationFormDto() {
+    }
+
     public RegistrationFormDto(String name, String email) {
         this.name = name;
         this.email = email;
