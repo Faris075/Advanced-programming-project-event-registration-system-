@@ -1,5 +1,6 @@
 package com.evently.repository;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.lang.NonNull;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.evently.model.User;
@@ -103,7 +105,7 @@ class UserRepositoryTest {
         User admin = buildUser("admin@test.com", true);
         User saved = userRepository.save(admin);
 
-        User loaded = userRepository.findById(saved.getId()).orElseThrow();
+        User loaded = userRepository.findById(Objects.requireNonNull(saved.getId())).orElseThrow();
         assertThat(loaded.isAdmin()).isTrue();
     }
 
@@ -113,7 +115,7 @@ class UserRepositoryTest {
         User user = buildUser("user@test.com", false);
         User saved = userRepository.save(user);
 
-        User loaded = userRepository.findById(saved.getId()).orElseThrow();
+        User loaded = userRepository.findById(Objects.requireNonNull(saved.getId())).orElseThrow();
         assertThat(loaded.isAdmin()).isFalse();
     }
 
@@ -125,13 +127,13 @@ class UserRepositoryTest {
      * Builds a minimal valid User entity for testing.
      * The password value is a fake BCrypt-style string — no real encoding needed in unit tests.
      */
-    private User buildUser(String email, boolean isAdmin) {
-        return User.builder()
+    private @NonNull User buildUser(String email, boolean isAdmin) {
+        return Objects.requireNonNull(User.builder()
                 .name("Test User")
                 .email(email)
                 .password("$2a$12$fakeHashForTestingOnly")
                 .isAdmin(isAdmin)
                 .currencyPreference("USD")
-                .build();
+                .build());
     }
 }

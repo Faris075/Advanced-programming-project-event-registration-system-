@@ -40,11 +40,9 @@ public class SecurityConfig {
     private String rememberMeKey;
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     public SecurityConfig(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     /**

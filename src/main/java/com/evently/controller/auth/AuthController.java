@@ -1,9 +1,5 @@
 package com.evently.controller.auth;
 
-import com.evently.dto.UserRegistrationDto;
-import com.evently.repository.UserRepository;
-import com.evently.model.User;
-import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.evently.dto.UserRegistrationDto;
+import com.evently.repository.UserRepository;
+
+import jakarta.validation.Valid;
 
 /**
  * Handles user registration and login page rendering.
@@ -30,7 +31,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/auth")
 public class AuthController {
 
+    @SuppressWarnings("unused")
     private final UserRepository  userRepository;
+    @SuppressWarnings("unused")
     private final PasswordEncoder passwordEncoder;
 
     public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
