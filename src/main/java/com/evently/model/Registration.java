@@ -1,5 +1,7 @@
 package com.evently.model;
 
+import com.evently.model.converter.PaymentStatusConverter;
+import com.evently.model.converter.RegistrationStatusConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -54,12 +56,12 @@ public class Registration {
     private LocalDateTime registrationDate;
 
     /** Booking lifecycle — see RegistrationStatus enum. */
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = RegistrationStatusConverter.class)
     @Column(nullable = false)
     private RegistrationStatus status = RegistrationStatus.CONFIRMED;
 
     /** Payment lifecycle — see PaymentStatus enum. */
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = PaymentStatusConverter.class)
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 

@@ -1,5 +1,6 @@
 package com.evently.model;
 
+import com.evently.model.converter.EventStatusConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -53,7 +54,7 @@ public class Event {
     @Column(precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = EventStatusConverter.class)
     @Column(nullable = false)
     private EventStatus status = EventStatus.DRAFT;
 
