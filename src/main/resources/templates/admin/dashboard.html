@@ -1,0 +1,57 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{admin/layout :: content('Admin Dashboard', ~{::pageBody})}">
+<div th:fragment="pageBody">
+    <section class="admin-card">
+        <h1 class="admin-heading">Admin Dashboard</h1>
+        <div class="stats-grid">
+            <div class="admin-card">
+                <h2>Total Events</h2>
+                <p th:text="${totalEvents}">0</p>
+            </div>
+            <div class="admin-card">
+                <h2>Published Events</h2>
+                <p th:text="${publishedEvents}">0</p>
+            </div>
+            <div class="admin-card">
+                <h2>Total Registrations</h2>
+                <p th:text="${totalRegistrations}">0</p>
+            </div>
+            <div class="admin-card">
+                <h2>Confirmed Registrations</h2>
+                <p th:text="${confirmedRegistrations}">0</p>
+            </div>
+            <div class="admin-card">
+                <h2>Waitlisted Registrations</h2>
+                <p th:text="${waitlistedRegistrations}">0</p>
+            </div>
+            <div class="admin-card">
+                <h2>Total Users</h2>
+                <p th:text="${totalUsers}">0</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="admin-card" style="margin-top: 1.5rem;">
+        <h2>Recent Events</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="event : ${recentEvents}">
+                    <td th:text="${event.title}">Event title</td>
+                    <td th:text="${#temporals.format(event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</td>
+                    <td th:text="${event.status}">STATUS</td>
+                    <td th:text="${#temporals.format(event.createdAt, 'MMM dd, yyyy')}">Created</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</html>

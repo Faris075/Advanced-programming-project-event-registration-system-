@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:fragment="content(pageTitle, body)">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${pageTitle} + ' — Evently Admin'">Evently Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}" />
+</head>
+<body>
+<nav class="admin-nav admin-card">
+    <a th:href="@{/admin}">Dashboard</a>
+    <a th:href="@{/admin/events}">Events</a>
+    <a th:href="@{/admin/registrations}">Registrations</a>
+    <a th:href="@{/admin/users}">Users</a>
+    <form th:action="@{/auth/logout}" method="post" style="display:inline">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <button type="submit" class="admin-button">Logout</button>
+    </form>
+</nav>
+<main class="admin-container">
+    <div th:insert="${body}"></div>
+</main>
+</body>
+</html>
