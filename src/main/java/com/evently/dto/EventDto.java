@@ -1,5 +1,6 @@
 package com.evently.dto;
 
+import com.evently.model.EventStatus;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -28,7 +29,7 @@ public class EventDto {
 
     @NotNull(message = "Date and time is required.")
     @Future(message = "Event date must be in the future.")
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime dateTime;
 
     @NotBlank(message = "Location is required.")
@@ -38,9 +39,10 @@ public class EventDto {
     @Min(value = 1, message = "Capacity must be at least 1.")
     private Integer capacity;
 
-    /** Optional — null means free event. */
+    /**
+     * Optional — null means free event.
+     */
     private BigDecimal price;
 
-    /** Status dropdown — only shown on edit form. */
-    private String status;
+    private EventStatus status = EventStatus.DRAFT;
 }
