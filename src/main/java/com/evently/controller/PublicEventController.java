@@ -8,13 +8,14 @@ import com.evently.repository.EventRepository;
 import com.evently.repository.RegistrationRepository;
 import com.evently.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Serves the public event listing and event detail pages.
@@ -31,10 +32,15 @@ public class PublicEventController {
     private final UserRepository         userRepository;
 
     @GetMapping("/events")
-    public String listEvents(Model model) {
-        List<Event> events = eventRepository
-            .findByStatusOrderByDateTimeAsc(EventStatus.PUBLISHED);
+    public String listEvents(@RequestParam(defaultValue = "0") int page,
+            Model model) {
+        Page<Event> events = eventRepository
+                .findByStatusOrderByDateTimeAsc(EventStatus.PUBLISHED,
+                        PageRequest.of(page, 10));
+
         model.addAttribute("events", events);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", events.getTotalPages());
         return "events/index";
     }
 
@@ -48,7 +54,7 @@ public class PublicEventController {
             return "redirect:/events";
         }
 
-        long confirmedCount = registrationRepository.countConfirmedRegistrations(id);
+        long confirmedCount = eventRepository.countConfirmedRegistrations(id);
         boolean isSoldOut = confirmedCount >= event.getCapacity();
         long waitlistCount = registrationRepository.countWaitlisted(id);
 
