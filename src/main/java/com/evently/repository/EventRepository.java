@@ -25,6 +25,11 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      */
     Page<Event> findByStatusOrderByDateTimeAsc(EventStatus status, Pageable pageable);
 
+    /**
+     * Public listing without pagination – returns all matching events as a list.
+     */
+    List<Event> findByStatusOrderByDateTimeAsc(EventStatus status);
+
     long countByStatus(EventStatus status);
 
     List<Event> findTop5ByOrderByCreatedAtDesc();
