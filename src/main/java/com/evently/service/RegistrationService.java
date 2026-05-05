@@ -34,8 +34,9 @@ public class RegistrationService {
     private final AttendeeRepository     attendeeRepository;
     private final RegistrationRepository registrationRepository;
 
+    
     /**
-     * Registers an attendee for an event.
+     * Registers an attendee for an event. 
      * Creates an Attendee record if one with the given email does not exist.
      * Places the registration as CONFIRMED or WAITLISTED based on remaining capacity.
      */
