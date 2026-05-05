@@ -68,9 +68,7 @@
                     <td th:text="${reg.attendee.email}">email@example.com</td>
                     <td>
                         <span th:text="${reg.status}"
-                              th:style="${reg.status.name() == 'CONFIRMED'} ? 'color:green;font-weight:bold'
-                                       : (${reg.status.name() == 'WAITLISTED'} ? 'color:orange;font-weight:bold'
-                                       : 'color:red;')">STATUS</span>
+                              th:style="${reg.status.name() == 'CONFIRMED' ? 'color:green;font-weight:bold' : (reg.status.name() == 'WAITLISTED' ? 'color:orange;font-weight:bold' : 'color:red;')}">STATUS</span>
                         <span th:if="${reg.waitlistPosition != null}"
                               th:text="' #' + ${reg.waitlistPosition}"></span>
                     </td>

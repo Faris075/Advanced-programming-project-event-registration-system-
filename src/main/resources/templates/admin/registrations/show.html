@@ -46,9 +46,7 @@
             <table class="admin-table">
                 <tr><th>Status</th>
                     <td th:text="${registration.status}"
-                        th:style="${registration.status.name() == 'CONFIRMED'} ? 'color:green;font-weight:bold'
-                                 : (${registration.status.name() == 'WAITLISTED'} ? 'color:orange;font-weight:bold'
-                                 : 'color:red;')">CONFIRMED</td>
+                        th:style="${registration.status.name() == 'CONFIRMED' ? 'color:green;font-weight:bold' : (registration.status.name() == 'WAITLISTED' ? 'color:orange;font-weight:bold' : 'color:red;')}">CONFIRMED</td>
                 </tr>
                 <tr th:if="${registration.waitlistPosition != null}">
                     <th>Waitlist #</th>

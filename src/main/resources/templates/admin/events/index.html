@@ -55,7 +55,7 @@
                         </form>
 
                         <form th:action="@{/admin/events/{id}/delete(id=${event.id})}" method="post" style="display:inline;"
-                              th:if="${event.status == T(com.evently.model.EventStatus).DRAFT} || ${event.status == T(com.evently.model.EventStatus).CANCELLED}">
+                              th:if="${event.status == T(com.evently.model.EventStatus).DRAFT or event.status == T(com.evently.model.EventStatus).CANCELLED}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="admin-button danger" onclick="return confirm('Delete this event?')">
                                 <i class="fas fa-trash"></i> Delete

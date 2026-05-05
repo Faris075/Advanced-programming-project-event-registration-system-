@@ -1,0 +1,46 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: content('Users', ~{::pageBody})}">
+<div th:fragment="pageBody">
+
+    <div class="admin-page-header">
+        <h1 class="admin-heading"><i class="fas fa-users" style="margin-right:.5rem;opacity:.7;"></i>Users</h1>
+    </div>
+
+    <div class="admin-card">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="user : ${users.content}">
+                    <td th:text="${user.id}">1</td>
+                    <td th:text="${user.name}">Name</td>
+                    <td th:text="${user.email}">email@example.com</td>
+                    <td>
+                        <span class="badge badge-published" th:if="${user.superAdmin}">Super Admin</span>
+                        <span class="badge badge-draft"     th:if="${user.admin and !user.superAdmin}">Admin</span>
+                        <span th:if="${!user.admin and !user.superAdmin}" style="color:rgba(255,255,255,.4);">User</span>
+                    </td>
+                    <td th:text="${user.createdAt != null ? #temporals.format(user.createdAt, 'MMM dd, yyyy') : '—'}">Date</td>
+                </tr>
+                <tr th:if="${users.content.isEmpty()}">
+                    <td colspan="5" style="text-align:center;color:rgba(255,255,255,.45);padding:2.5rem;">No users found.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="pagination" th:if="${totalPages > 1}">
+            <a th:href="@{/admin/users(page=${currentPage - 1})}" th:if="${currentPage > 0}" class="admin-button secondary">&#8592; Previous</a>
+            <span style="color:rgba(255,255,255,.6);font-size:.875rem;">Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
+            <a th:href="@{/admin/users(page=${currentPage + 1})}" th:if="${currentPage + 1 < totalPages}" class="admin-button secondary">Next &#8594;</a>
+        </div>
+    </div>
+
+</div>
+</html>
