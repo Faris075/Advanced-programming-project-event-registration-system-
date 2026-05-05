@@ -2,55 +2,65 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{admin/layout :: content('Edit Event', ~{::pageBody})}">
 <div th:fragment="pageBody">
-    <section class="admin-card">
-        <h1 class="admin-heading">Edit Event</h1>
 
-        <form th:action="@{/admin/events/{id}/edit(id=${eventId})}" th:object="${eventDto}" method="post" style="margin-top:1rem;">
+    <div class="admin-page-header">
+        <h1 class="admin-heading"><i class="fas fa-edit" style="margin-right:.5rem;opacity:.7;"></i>Edit Event</h1>
+        <a th:href="@{/admin/events}" class="admin-button secondary">
+            <i class="fas fa-arrow-left"></i> Back to Events
+        </a>
+    </div>
+
+    <div class="admin-card">
+        <p style="margin-bottom:1.25rem;color:rgba(255,255,255,.6);font-size:.875rem;">
+            Status: <span class="badge badge-published" th:if="${eventDto.status.name() == 'PUBLISHED'}" th:text="${eventDto.status}"></span>
+                    <span class="badge badge-draft"     th:if="${eventDto.status.name() == 'DRAFT'}"     th:text="${eventDto.status}"></span>
+                    <span class="badge badge-completed" th:if="${eventDto.status.name() == 'COMPLETED'}" th:text="${eventDto.status}"></span>
+                    <span class="badge badge-cancelled" th:if="${eventDto.status.name() == 'CANCELLED'}" th:text="${eventDto.status}"></span>
+        </p>
+
+        <form th:action="@{/admin/events/{id}/edit(id=${eventId})}" th:object="${eventDto}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-            <p>Status: <strong th:text="${eventDto.status}">DRAFT</strong></p>
+            <div class="form-grid">
+                <div>
+                    <label for="title">Title</label>
+                    <input id="title" type="text" th:field="*{title}" placeholder="Event title" />
+                    <span class="field-error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+                </div>
+                <div>
+                    <label for="location">Location</label>
+                    <input id="location" type="text" th:field="*{location}" placeholder="Venue or address" />
+                    <span class="field-error" th:if="${#fields.hasErrors('location')}" th:errors="*{location}"></span>
+                </div>
+                <div>
+                    <label for="dateTime">Date &amp; Time</label>
+                    <input id="dateTime" type="datetime-local" th:field="*{dateTime}" />
+                    <span class="field-error" th:if="${#fields.hasErrors('dateTime')}" th:errors="*{dateTime}"></span>
+                </div>
+                <div>
+                    <label for="capacity">Capacity</label>
+                    <input id="capacity" type="number" th:field="*{capacity}" min="1" />
+                    <span class="field-error" th:if="${#fields.hasErrors('capacity')}" th:errors="*{capacity}"></span>
+                </div>
+                <div>
+                    <label for="price">Price ($)</label>
+                    <input id="price" type="number" th:field="*{price}" step="0.01" min="0" />
+                    <span class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></span>
+                </div>
+            </div>
 
-            <label>
-                Title
-                <input type="text" th:field="*{title}" />
-            </label>
-            <div th:if="${#fields.hasErrors('title')}" style="color:#b91c1c;" th:errors="*{title}"></div>
+            <div>
+                <label for="description">Description</label>
+                <textarea id="description" th:field="*{description}" rows="5"></textarea>
+                <span class="field-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+            </div>
 
-            <label style="display:block; margin-top:1rem;">
-                Description
-                <textarea th:field="*{description}" rows="5"></textarea>
-            </label>
-            <div th:if="${#fields.hasErrors('description')}" style="color:#b91c1c;" th:errors="*{description}"></div>
-
-            <label style="display:block; margin-top:1rem;">
-                Date and time
-                <input type="datetime-local" th:field="*{dateTime}" />
-            </label>
-            <div th:if="${#fields.hasErrors('dateTime')}" style="color:#b91c1c;" th:errors="*{dateTime}"></div>
-
-            <label style="display:block; margin-top:1rem;">
-                Location
-                <input type="text" th:field="*{location}" />
-            </label>
-            <div th:if="${#fields.hasErrors('location')}" style="color:#b91c1c;" th:errors="*{location}"></div>
-
-            <label style="display:block; margin-top:1rem;">
-                Capacity
-                <input type="number" th:field="*{capacity}" min="1" />
-            </label>
-            <div th:if="${#fields.hasErrors('capacity')}" style="color:#b91c1c;" th:errors="*{capacity}"></div>
-
-            <label style="display:block; margin-top:1rem;">
-                Price
-                <input type="number" th:field="*{price}" step="0.01" min="0" />
-            </label>
-            <div th:if="${#fields.hasErrors('price')}" style="color:#b91c1c;" th:errors="*{price}"></div>
-
-            <div style="margin-top:1.5rem;">
-                <button type="submit" class="admin-button">Save Changes</button>
-                <a th:href="@{/admin/events}" class="admin-button" style="background:#64748b;">Cancel</a>
+            <div style="display:flex;gap:.75rem;margin-top:.5rem;">
+                <button type="submit" class="admin-button"><i class="fas fa-save"></i> Save Changes</button>
+                <a th:href="@{/admin/events}" class="admin-button secondary">Cancel</a>
             </div>
         </form>
-    </section>
+    </div>
+
 </div>
 </html>

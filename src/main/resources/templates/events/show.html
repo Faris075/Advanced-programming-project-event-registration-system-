@@ -2,6 +2,10 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{layout :: content(${event.title}, ~{::pageBody})}">
 <div th:fragment="pageBody">
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-error"   th:if="${errorMessage}"   th:text="${errorMessage}"></div>
+
     <section class="event-detail">
         <div class="event-detail-header">
             <div>
@@ -28,7 +32,14 @@
 
         <div class="registration-form">
             <h2 th:text="${isSoldOut ? 'Join the waitlist' : 'Register now'}">Register now</h2>
-            <form th:action="@{/register/{id}(id=${event.id})}" method="post" th:object="${form}">
+
+            <!-- Must be logged in to register -->
+            <div sec:authorize="isAnonymous()">
+                <p>You need to <a th:href="@{/auth/login}">sign in</a> to register for this event.</p>
+            </div>
+
+            <form sec:authorize="isAuthenticated()"
+                  th:action="@{/register/{id}(id=${event.id})}" method="post" th:object="${form}">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <div class="form-row">
                     <input type="text" th:field="*{name}" placeholder="Full Name" required />

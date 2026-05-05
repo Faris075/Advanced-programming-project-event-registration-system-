@@ -56,6 +56,7 @@ public class Event {
 
     @Convert(converter = EventStatusConverter.class)
     @Column(nullable = false)
+    @Builder.Default
     private EventStatus status = EventStatus.DRAFT;
 
     @Column(name = "created_at", nullable = false, updatable = false)

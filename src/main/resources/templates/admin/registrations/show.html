@@ -1,0 +1,93 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: content('Registration Detail', ~{::pageBody})}">
+<div th:fragment="pageBody">
+
+    <div class="admin-page-header" style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <a th:href="@{/admin/registrations}" class="admin-button" style="text-decoration:none;">← Back</a>
+        <h1 class="admin-heading" style="margin:0;">Registration #<span th:text="${registration.id}">1</span></h1>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-error"   th:if="${errorMessage}"   th:text="${errorMessage}"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+        <!-- Attendee details -->
+        <section class="admin-card">
+            <h2>Attendee</h2>
+            <table class="admin-table">
+                <tr><th>Name</th>    <td th:text="${registration.attendee.name}">Name</td></tr>
+                <tr><th>Email</th>   <td th:text="${registration.attendee.email}">email@example.com</td></tr>
+                <tr><th>Phone</th>   <td th:text="${registration.attendee.phone ?: '—'}">—</td></tr>
+                <tr><th>Company</th> <td th:text="${registration.attendee.company ?: '—'}">—</td></tr>
+            </table>
+        </section>
+
+        <!-- Event details -->
+        <section class="admin-card">
+            <h2>Event</h2>
+            <table class="admin-table">
+                <tr>
+                    <th>Title</th>
+                    <td>
+                        <a th:href="@{/admin/events/{id}(id=${registration.event.id})}"
+                           th:text="${registration.event.title}">Title</a>
+                    </td>
+                </tr>
+                <tr><th>Date</th>     <td th:text="${#temporals.format(registration.event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</td></tr>
+                <tr><th>Location</th> <td th:text="${registration.event.location}">Location</td></tr>
+                <tr><th>Capacity</th> <td th:text="${registration.event.capacity}">100</td></tr>
+            </table>
+        </section>
+
+        <!-- Registration details -->
+        <section class="admin-card">
+            <h2>Booking Details</h2>
+            <table class="admin-table">
+                <tr><th>Status</th>
+                    <td th:text="${registration.status}"
+                        th:style="${registration.status.name() == 'CONFIRMED'} ? 'color:green;font-weight:bold'
+                                 : (${registration.status.name() == 'WAITLISTED'} ? 'color:orange;font-weight:bold'
+                                 : 'color:red;')">CONFIRMED</td>
+                </tr>
+                <tr th:if="${registration.waitlistPosition != null}">
+                    <th>Waitlist #</th>
+                    <td th:text="${registration.waitlistPosition}">1</td>
+                </tr>
+                <tr><th>Payment</th>      <td th:text="${registration.paymentStatus}">PENDING</td></tr>
+                <tr><th>Admin Override</th><td th:text="${registration.isAdminOverride() ? 'Yes' : 'No'}">No</td></tr>
+                <tr><th>Registered</th>   <td th:text="${#temporals.format(registration.registrationDate, 'MMM dd, yyyy HH:mm')}">Date</td></tr>
+            </table>
+        </section>
+
+        <!-- Admin actions -->
+        <section class="admin-card">
+            <h2>Admin Actions</h2>
+
+            <!-- Cancel -->
+            <form th:if="${registration.status.name() != 'CANCELLED'}"
+                  th:action="@{/admin/registrations/{id}/cancel(id=${registration.id})}"
+                  method="post" style="margin-bottom:1rem;"
+                  onsubmit="return confirm('Cancel this registration and promote waitlist?')">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="admin-button" style="background:var(--danger,#e53e3e);width:100%;">
+                    Cancel Registration
+                </button>
+            </form>
+
+            <!-- Override status -->
+            <form th:action="@{/admin/registrations/{id}/status(id=${registration.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <label for="status">Force Status Change</label>
+                <select id="status" name="status" style="margin:0.5rem 0;width:100%;">
+                    <option th:each="s : ${T(com.evently.model.RegistrationStatus).values()}"
+                            th:value="${s}"
+                            th:text="${s}"
+                            th:selected="${registration.status == s}">STATUS</option>
+                </select>
+                <button type="submit" class="admin-button" style="width:100%;">Update Status</button>
+            </form>
+        </section>
+    </div>
+</div>
+</html>

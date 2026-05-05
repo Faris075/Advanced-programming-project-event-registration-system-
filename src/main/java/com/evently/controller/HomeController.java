@@ -1,5 +1,7 @@
 package com.evently.controller;
 
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -11,9 +13,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HomeController {
 
-    /** Redirect root to the public events listing. */
+    /**
+     * Unauthenticated visitors are sent to the login page.
+     * Authenticated users are sent to the events listing.
+     */
     @GetMapping("/")
-    public String home() {
-        return "redirect:/events";
+    public String home(Authentication authentication) {
+        if (authentication != null
+                && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/events";
+        }
+        return "redirect:/auth/login";
     }
 }

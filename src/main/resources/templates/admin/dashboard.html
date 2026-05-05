@@ -2,56 +2,74 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{admin/layout :: content('Admin Dashboard', ~{::pageBody})}">
 <div th:fragment="pageBody">
-    <section class="admin-card">
-        <h1 class="admin-heading">Admin Dashboard</h1>
-        <div class="stats-grid">
-            <div class="admin-card">
-                <h2>Total Events</h2>
-                <p th:text="${totalEvents}">0</p>
-            </div>
-            <div class="admin-card">
-                <h2>Published Events</h2>
-                <p th:text="${publishedEvents}">0</p>
-            </div>
-            <div class="admin-card">
-                <h2>Total Registrations</h2>
-                <p th:text="${totalRegistrations}">0</p>
-            </div>
-            <div class="admin-card">
-                <h2>Confirmed Registrations</h2>
-                <p th:text="${confirmedRegistrations}">0</p>
-            </div>
-            <div class="admin-card">
-                <h2>Waitlisted Registrations</h2>
-                <p th:text="${waitlistedRegistrations}">0</p>
-            </div>
-            <div class="admin-card">
-                <h2>Total Users</h2>
-                <p th:text="${totalUsers}">0</p>
-            </div>
-        </div>
-    </section>
 
-    <section class="admin-card" style="margin-top: 1.5rem;">
-        <h2>Recent Events</h2>
+    <div class="admin-page-header">
+        <h1 class="admin-heading"><i class="fas fa-tachometer-alt" style="margin-right:.5rem;opacity:.7;"></i>Dashboard</h1>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3><i class="fas fa-calendar-alt" style="margin-right:.35rem;color:#23a2f6;"></i>Total Events</h3>
+            <div class="stat-value" th:text="${totalEvents}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3><i class="fas fa-check-circle" style="margin-right:.35rem;color:#4ade80;"></i>Published</h3>
+            <div class="stat-value" th:text="${publishedEvents}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3><i class="fas fa-ticket-alt" style="margin-right:.35rem;color:#f09819;"></i>Registrations</h3>
+            <div class="stat-value" th:text="${totalRegistrations}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3><i class="fas fa-user-check" style="margin-right:.35rem;color:#4ade80;"></i>Confirmed</h3>
+            <div class="stat-value" th:text="${confirmedRegistrations}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3><i class="fas fa-clock" style="margin-right:.35rem;color:#fbbf24;"></i>Waitlisted</h3>
+            <div class="stat-value" th:text="${waitlistedRegistrations}">0</div>
+        </div>
+        <div class="stat-card">
+            <h3><i class="fas fa-users" style="margin-right:.35rem;color:#23a2f6;"></i>Users</h3>
+            <div class="stat-value" th:text="${totalUsers}">0</div>
+        </div>
+    </div>
+
+    <!-- Recent events table -->
+    <div class="admin-card" style="margin-top:1.75rem;">
+        <div class="admin-page-header" style="margin-bottom:1rem;">
+            <h2 style="font-size:1rem;font-weight:600;color:rgba(255,255,255,.85);">
+                <i class="fas fa-history" style="margin-right:.4rem;opacity:.6;"></i>Recent Events
+            </h2>
+            <a th:href="@{/admin/events}" class="admin-button">View All</a>
+        </div>
         <table class="admin-table">
             <thead>
                 <tr>
                     <th>Title</th>
                     <th>Date</th>
                     <th>Status</th>
-                    <th>Created At</th>
+                    <th>Created</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="event : ${recentEvents}">
-                    <td th:text="${event.title}">Event title</td>
+                    <td><a th:href="@{/admin/events/{id}(id=${event.id})}" th:text="${event.title}" style="color:#23a2f6;font-weight:500;">Event title</a></td>
                     <td th:text="${#temporals.format(event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</td>
-                    <td th:text="${event.status}">STATUS</td>
+                    <td>
+                        <span class="badge badge-published" th:if="${event.status.name() == 'PUBLISHED'}" th:text="${event.status}"></span>
+                        <span class="badge badge-draft"     th:if="${event.status.name() == 'DRAFT'}"     th:text="${event.status}"></span>
+                        <span class="badge badge-completed" th:if="${event.status.name() == 'COMPLETED'}" th:text="${event.status}"></span>
+                        <span class="badge badge-cancelled" th:if="${event.status.name() == 'CANCELLED'}" th:text="${event.status}"></span>
+                    </td>
                     <td th:text="${#temporals.format(event.createdAt, 'MMM dd, yyyy')}">Created</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(recentEvents)}">
+                    <td colspan="4" style="text-align:center;color:rgba(255,255,255,.45);padding:2rem;">No events yet.</td>
                 </tr>
             </tbody>
         </table>
-    </section>
+    </div>
+
 </div>
 </html>

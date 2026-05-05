@@ -6,18 +6,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title th:text="${pageTitle} + ' — Evently Admin'">Evently Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <link rel="stylesheet" th:href="@{/css/admin.css}" />
 </head>
 <body>
-<nav class="admin-nav admin-card">
-    <a th:href="@{/admin}">Dashboard</a>
-    <a th:href="@{/admin/events}">Events</a>
-    <a th:href="@{/admin/registrations}">Registrations</a>
-    <a th:href="@{/admin/users}">Users</a>
-    <form th:action="@{/auth/logout}" method="post" style="display:inline">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <button type="submit" class="admin-button">Logout</button>
-    </form>
+<nav class="admin-nav">
+    <span class="admin-brand">Evently</span>
+
+    <a th:href="@{/admin}" class="admin-tab"
+       th:classappend="${#strings.startsWith(#request.requestURI, '/admin') and
+                         !#strings.startsWith(#request.requestURI, '/admin/events') and
+                         !#strings.startsWith(#request.requestURI, '/admin/registrations') and
+                         !#strings.startsWith(#request.requestURI, '/admin/users')} ? ' active'">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+    </a>
+    <a th:href="@{/admin/events}" class="admin-tab"
+       th:classappend="${#strings.startsWith(#request.requestURI, '/admin/events')} ? ' active'">
+        <i class="fas fa-calendar-alt"></i> Events
+    </a>
+    <a th:href="@{/admin/registrations}" class="admin-tab"
+       th:classappend="${#strings.startsWith(#request.requestURI, '/admin/registrations')} ? ' active'">
+        <i class="fas fa-ticket-alt"></i> Registrations
+    </a>
+    <a th:href="@{/admin/users}" class="admin-tab"
+       th:classappend="${#strings.startsWith(#request.requestURI, '/admin/users')} ? ' active'">
+        <i class="fas fa-users"></i> Users
+    </a>
+
+    <div class="admin-nav-spacer"></div>
+
+    <div class="admin-nav-right">
+        <a th:href="@{/events}" class="admin-nav-btn admin-nav-btn-client">
+            <i class="fas fa-eye"></i> Client View
+        </a>
+        <form th:action="@{/auth/logout}" method="post" style="display:inline;margin:0">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="admin-nav-btn admin-nav-btn-logout">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </form>
+    </div>
 </nav>
 <main class="admin-container">
     <div th:insert="${body}"></div>

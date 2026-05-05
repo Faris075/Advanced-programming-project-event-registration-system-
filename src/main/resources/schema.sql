@@ -92,9 +92,27 @@ CREATE TABLE IF NOT EXISTS registrations (
 
 -- DB-level duplicate prevention (second layer after service-level check)
 
+
 UNIQUE KEY uq_event_attendee (event_id, attendee_id),
 
     INDEX idx_registrations_event_id    (event_id),
     INDEX idx_registrations_attendee_id (attendee_id),
     INDEX idx_registrations_status      (status)
+);
+
+-- ----------------------------------------------------------------
+-- TABLE: sessions
+-- Tracks active user login sessions for audit and session management.
+-- ----------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS sessions (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    session_token VARCHAR(255) NOT NULL UNIQUE,
+    ip_address VARCHAR(45) NULL,
+    user_agent TEXT NULL,
+    last_activity TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_session_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+    INDEX idx_sessions_user_id (user_id),
+    INDEX idx_sessions_token (session_token)
 );

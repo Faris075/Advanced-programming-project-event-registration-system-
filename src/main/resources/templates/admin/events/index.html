@@ -2,19 +2,19 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{admin/layout :: content('Admin Events', ~{::pageBody})}">
 <div th:fragment="pageBody">
-    <section class="admin-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem;">
-            <div>
-                <h1 class="admin-heading">Events</h1>
-                <p>Manage event drafts, published events, and cancellations.</p>
-            </div>
-            <a th:href="@{/admin/events/create}" class="admin-button">Create Event</a>
-        </div>
 
-        <div th:if="${success}" style="margin-top:1rem; padding:1rem; border:1px solid #22c55e; background:#ecfdf5; color:#166534;"> <p th:text="${success}"></p></div>
-        <div th:if="${error}" style="margin-top:1rem; padding:1rem; border:1px solid #f87171; background:#fef2f2; color:#991b1b;"> <p th:text="${error}"></p></div>
+    <div class="admin-page-header">
+        <h1 class="admin-heading"><i class="fas fa-calendar-alt" style="margin-right:.5rem;opacity:.7;"></i>Events</h1>
+        <a th:href="@{/admin/events/create}" class="admin-button">
+            <i class="fas fa-plus"></i> Create Event
+        </a>
+    </div>
 
-        <table class="admin-table" style="margin-top:1.5rem;">
+    <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+    <div class="alert alert-error"   th:if="${error}"   th:text="${error}"></div>
+
+    <div class="admin-card">
+        <table class="admin-table">
             <thead>
                 <tr>
                     <th>Title</th>
@@ -27,38 +27,54 @@
             </thead>
             <tbody>
                 <tr th:each="event : ${events.content}">
-                    <td th:text="${event.title}">Title</td>
+                    <td><a th:href="@{/admin/events/{id}/edit(id=${event.id})}" th:text="${event.title}" style="color:#23a2f6;font-weight:500;">Title</a></td>
                     <td th:text="${#temporals.format(event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</td>
                     <td th:text="${event.location}">Location</td>
                     <td th:text="${event.capacity}">100</td>
-                    <td th:text="${event.status}">STATUS</td>
                     <td>
-                        <a th:href="@{/admin/events/{id}/edit(id=${event.id})}" class="admin-button" style="margin-right:.5rem;">Edit</a>
+                        <span class="badge badge-published" th:if="${event.status.name() == 'PUBLISHED'}" th:text="${event.status}"></span>
+                        <span class="badge badge-draft"     th:if="${event.status.name() == 'DRAFT'}"     th:text="${event.status}"></span>
+                        <span class="badge badge-completed" th:if="${event.status.name() == 'COMPLETED'}" th:text="${event.status}"></span>
+                        <span class="badge badge-cancelled" th:if="${event.status.name() == 'CANCELLED'}" th:text="${event.status}"></span>
+                    </td>
+                    <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+                        <a th:href="@{/admin/events/{id}/edit(id=${event.id})}" class="admin-button">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
 
-                        <form th:action="@{/admin/events/{id}/publish(id=${event.id})}" method="post" style="display:inline-block; margin-right:.25rem;" th:if="${event.status == T(com.evently.model.EventStatus).DRAFT}">
+                        <form th:action="@{/admin/events/{id}/publish(id=${event.id})}" method="post" style="display:inline;"
+                              th:if="${event.status == T(com.evently.model.EventStatus).DRAFT}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="admin-button">Publish</button>
+                            <button type="submit" class="admin-button" style="background:linear-gradient(135deg,#16a34a,#22c55e);"><i class="fas fa-globe"></i> Publish</button>
                         </form>
 
-                        <form th:action="@{/admin/events/{id}/cancel(id=${event.id})}" method="post" style="display:inline-block; margin-right:.25rem;" th:if="${event.status == T(com.evently.model.EventStatus).PUBLISHED}">
+                        <form th:action="@{/admin/events/{id}/cancel(id=${event.id})}" method="post" style="display:inline;"
+                              th:if="${event.status == T(com.evently.model.EventStatus).PUBLISHED}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="admin-button">Cancel</button>
+                            <button type="submit" class="admin-button" style="background:linear-gradient(135deg,#b45309,#f09819);"><i class="fas fa-ban"></i> Cancel</button>
                         </form>
 
-                        <form th:action="@{/admin/events/{id}/delete(id=${event.id})}" method="post" style="display:inline-block;" th:if="${event.status == T(com.evently.model.EventStatus).DRAFT} || ${event.status == T(com.evently.model.EventStatus).CANCELLED}">
+                        <form th:action="@{/admin/events/{id}/delete(id=${event.id})}" method="post" style="display:inline;"
+                              th:if="${event.status == T(com.evently.model.EventStatus).DRAFT} || ${event.status == T(com.evently.model.EventStatus).CANCELLED}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                            <button type="submit" class="admin-button" style="background:#ef4444;">Delete</button>
+                            <button type="submit" class="admin-button danger" onclick="return confirm('Delete this event?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
                         </form>
                     </td>
+                </tr>
+                <tr th:if="${events.content.isEmpty()}">
+                    <td colspan="6" style="text-align:center;color:rgba(255,255,255,.45);padding:2.5rem;">No events found.</td>
                 </tr>
             </tbody>
         </table>
 
-        <div class="pagination" th:if="${totalPages > 1}" style="margin-top:1rem;">
-            <a th:href="@{/admin/events(page=${currentPage - 1}, size=${10})}" th:if="${currentPage > 0}" class="admin-button">Previous</a>
-            <span>Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
-            <a th:href="@{/admin/events(page=${currentPage + 1}, size=${10})}" th:if="${currentPage + 1 < totalPages}" class="admin-button">Next</a>
+        <div class="pagination" th:if="${totalPages > 1}">
+            <a th:href="@{/admin/events(page=${currentPage - 1},size=10)}" th:if="${currentPage > 0}" class="admin-button secondary">&#8592; Previous</a>
+            <span style="color:rgba(255,255,255,.6);font-size:.875rem;">Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
+            <a th:href="@{/admin/events(page=${currentPage + 1},size=10)}" th:if="${currentPage + 1 < totalPages}" class="admin-button secondary">Next &#8594;</a>
         </div>
-    </section>
+    </div>
+
 </div>
 </html>

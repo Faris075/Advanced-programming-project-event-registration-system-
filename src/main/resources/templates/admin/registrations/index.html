@@ -1,0 +1,94 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{admin/layout :: content('Registrations', ~{::pageBody})}">
+<div th:fragment="pageBody">
+
+    <div class="admin-page-header">
+        <h1 class="admin-heading">Registrations</h1>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-error"   th:if="${errorMessage}"   th:text="${errorMessage}"></div>
+
+    <!-- Filter form -->
+    <section class="admin-card" style="margin-bottom:1.5rem;">
+        <form method="get" th:action="@{/admin/registrations}" class="filter-form" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+            <div>
+                <label for="eventId">Event</label>
+                <select id="eventId" name="eventId">
+                    <option value="">All Events</option>
+                    <option th:each="e : ${events}"
+                            th:value="${e.id}"
+                            th:text="${e.title}"
+                            th:selected="${selectedEventId != null && selectedEventId == e.id}">Event</option>
+                </select>
+            </div>
+            <div>
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="">All Statuses</option>
+                    <option th:each="s : ${allStatuses}"
+                            th:value="${s}"
+                            th:text="${s}"
+                            th:selected="${selectedStatus != null && selectedStatus == s}">STATUS</option>
+                </select>
+            </div>
+            <button type="submit" class="admin-button">Filter</button>
+            <a th:href="@{/admin/registrations}" class="admin-button" style="text-decoration:none;">Clear</a>
+        </form>
+    </section>
+
+    <section class="admin-card">
+        <p th:text="'Showing ' + ${#lists.size(registrations)} + ' registration(s)'"></p>
+
+        <div th:if="${#lists.isEmpty(registrations)}" class="empty-state">
+            <p>No registrations found.</p>
+        </div>
+
+        <table class="admin-table" th:unless="${#lists.isEmpty(registrations)}">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Event</th>
+                    <th>Attendee</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="reg : ${registrations}">
+                    <td th:text="${reg.id}">1</td>
+                    <td>
+                        <a th:href="@{/admin/events/{id}(id=${reg.event.id})}"
+                           th:text="${reg.event.title}">Event</a>
+                    </td>
+                    <td th:text="${reg.attendee.name}">Name</td>
+                    <td th:text="${reg.attendee.email}">email@example.com</td>
+                    <td>
+                        <span th:text="${reg.status}"
+                              th:style="${reg.status.name() == 'CONFIRMED'} ? 'color:green;font-weight:bold'
+                                       : (${reg.status.name() == 'WAITLISTED'} ? 'color:orange;font-weight:bold'
+                                       : 'color:red;')">STATUS</span>
+                        <span th:if="${reg.waitlistPosition != null}"
+                              th:text="' #' + ${reg.waitlistPosition}"></span>
+                    </td>
+                    <td th:text="${reg.paymentStatus}">PENDING</td>
+                    <td th:text="${#temporals.format(reg.registrationDate, 'MMM dd, yyyy')}">Date</td>
+                    <td style="white-space:nowrap;">
+                        <a th:href="@{/admin/registrations/{id}(id=${reg.id})}" class="admin-button" style="text-decoration:none;margin-right:4px;">View</a>
+                        <form th:if="${reg.status.name() != 'CANCELLED'}"
+                              th:action="@{/admin/registrations/{id}/cancel(id=${reg.id})}"
+                              method="post" style="display:inline"
+                              onsubmit="return confirm('Cancel this registration?')">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="admin-button" style="background:var(--danger,#e53e3e);">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</html>

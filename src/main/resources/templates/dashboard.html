@@ -1,0 +1,61 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout :: content('My Registrations', ~{::pageBody})}">
+<div th:fragment="pageBody">
+    <section class="page-header">
+        <h1>My Registrations</h1>
+        <p>All the events you have registered for.</p>
+    </section>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-error"   th:if="${errorMessage}"   th:text="${errorMessage}"></div>
+
+    <div th:if="${#lists.isEmpty(registrations)}" class="empty-state">
+        <p>You haven't registered for any events yet.</p>
+        <a th:href="@{/events}" class="btn">Browse Events</a>
+    </div>
+
+    <table class="admin-table" th:unless="${#lists.isEmpty(registrations)}">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Payment</th>
+                <th>Registered On</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="reg : ${registrations}">
+                <td>
+                    <a th:href="@{/events/{id}(id=${reg.event.id})}"
+                       th:text="${reg.event.title}">Event Title</a>
+                </td>
+                <td th:text="${#temporals.format(reg.event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</td>
+                <td th:text="${reg.event.location}">Location</td>
+                <td>
+                    <span th:text="${reg.status}"
+                          th:classappend="${reg.status.name() == 'CONFIRMED' ? 'badge badge-available' : (reg.status.name() == 'WAITLISTED' ? 'badge badge-waitlist' : 'badge badge-cancelled')}">
+                        CONFIRMED
+                    </span>
+                    <span th:if="${reg.status.name() == 'WAITLISTED'}"
+                          th:text="' (#' + ${reg.waitlistPosition} + ')'"></span>
+                </td>
+                <td th:text="${reg.paymentStatus}">PENDING</td>
+                <td th:text="${#temporals.format(reg.registrationDate, 'MMM dd, yyyy')}">Date</td>
+                <td>
+                    <form th:if="${reg.status.name() != 'CANCELLED'}"
+                          th:action="@{/dashboard/cancel/{id}(id=${reg.id})}" method="post"
+                          onsubmit="return confirm('Cancel this registration?')">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn-secondary" style="font-size:0.85rem;">Cancel</button>
+                    </form>
+                    <span th:if="${reg.status.name() == 'CANCELLED'}" style="color:var(--text-muted,#888);">—</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</html>

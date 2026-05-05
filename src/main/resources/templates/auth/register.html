@@ -1,62 +1,69 @@
+<!DOCTYPE html>
 <!--
-  Registration page template.
+  Register page — standalone glassmorphism design (no layout wrapper).
   Backing bean: UserRegistrationDto (OWNER: Alei)
   Controller:   AuthController.registerPage() / register()
 -->
-<html xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{layout :: content('Create Account', ~{::pageBody})}">
-<div th:fragment="pageBody">
-    <section class="auth-form">
-        <h1>Create Account</h1>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account — Evently</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+</head>
+<body>
+    <div class="shape" style="height:200px;width:200px;position:absolute;border-radius:50%;background:linear-gradient(#1845ad,#23a2f6);top:-80px;left:-80px;z-index:0;"></div>
+    <div class="shape" style="height:150px;width:150px;position:absolute;border-radius:50%;background:linear-gradient(to right,#ff512f,#f09819);bottom:-60px;right:-60px;z-index:0;"></div>
 
-        <form th:action="@{/auth/register}" method="post" th:object="${registrationDto}">
-            <!-- CSRF token required by Spring Security -->
+    <div class="auth-wrapper">
+        <form class="auth-form" th:action="@{/auth/register}" method="post" th:object="${registrationDto}">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <h1>Evently</h1>
+
+            <!-- Global error (e.g. passwords don't match) -->
+            <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}" style="margin-bottom:1.25rem"></div>
 
             <div class="form-group">
                 <label for="name">Full Name</label>
                 <input id="name" type="text" th:field="*{name}"
                        autocomplete="name" placeholder="Jane Smith" />
-                <!-- Server-side validation error (BindingResult) -->
-                <span class="field-error" th:if="${#fields.hasErrors('name')}"
-                      th:errors="*{name}">Name error</span>
+                <span class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
             </div>
 
             <div class="form-group">
                 <label for="email">Email address</label>
                 <input id="email" type="email" th:field="*{email}"
                        autocomplete="email" placeholder="you@example.com" />
-                <span class="field-error" th:if="${#fields.hasErrors('email')}"
-                      th:errors="*{email}">Email error</span>
+                <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
                 <input id="password" type="password" th:field="*{password}"
                        autocomplete="new-password" placeholder="At least 8 characters" />
-                <span class="field-error" th:if="${#fields.hasErrors('password')}"
-                      th:errors="*{password}">Password error</span>
+                <span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom:1.5rem">
                 <label for="passwordConfirm">Confirm Password</label>
                 <input id="passwordConfirm" type="password" th:field="*{passwordConfirm}"
                        autocomplete="new-password" placeholder="Re-enter password" />
-                <span class="field-error" th:if="${#fields.hasErrors('passwordConfirm')}"
-                      th:errors="*{passwordConfirm}">Confirm password error</span>
+                <span class="field-error" th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}"></span>
             </div>
 
-            <!-- Global / cross-field error (e.g. passwords do not match) -->
-            <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}">
-                Error message placeholder.
-            </div>
+            <button type="submit" class="btn btn-full">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
 
-            <button type="submit" class="btn btn-full">Create Account</button>
+            <p class="auth-links">
+                Already have an account? <a th:href="@{/auth/login}">Sign in</a>
+            </p>
         </form>
-
-        <p class="auth-links">
-            Already have an account? <a th:href="@{/auth/login}">Sign in</a>
-        </p>
-    </section>
-</div>
+    </div>
+</body>
 </html>
