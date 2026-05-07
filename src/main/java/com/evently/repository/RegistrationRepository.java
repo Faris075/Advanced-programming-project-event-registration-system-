@@ -3,6 +3,7 @@ package com.evently.repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -39,10 +40,16 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
      */
     List<Registration> findByEventId(Long eventId);
 
+    Page<Registration> findByEventId(Long eventId, org.springframework.data.domain.Pageable pageable);
+
     /**
      * All registrations for an event filtered by status.
      */
     List<Registration> findByEventIdAndStatus(Long eventId, RegistrationStatus status);
+
+    Page<Registration> findByEventIdAndStatus(Long eventId, RegistrationStatus status, org.springframework.data.domain.Pageable pageable);
+
+    Page<Registration> findByStatus(RegistrationStatus status, org.springframework.data.domain.Pageable pageable);
 
     long countByStatus(RegistrationStatus status);
 

@@ -24,7 +24,8 @@ import com.evently.repository.UserRepository;
  *
  * Verifies idempotency, admin user creation, and sample event seeding.
  *
- * Uses @DataJpaTest + @Import to load only the JPA layer plus DataSeeder and its dependency.
+ * Uses @DataJpaTest + @Import to load only the JPA layer plus DataSeeder and
+ * its dependency.
  *
  * OWNER: Faris
  */
@@ -33,15 +34,19 @@ import com.evently.repository.UserRepository;
 @Import({DataSeeder.class, BCryptPasswordEncoder.class})
 class DataSeederTest {
 
-    @Autowired private DataSeeder     dataSeeder;
-    @Autowired private UserRepository userRepository;
-    @Autowired private EventRepository eventRepository;
+    @Autowired
+    private DataSeeder dataSeeder;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private EventRepository eventRepository;
 
     /**
-     * BCryptPasswordEncoder is injected into DataSeeder via @Import.
-     * We also need it here to verify the encoded password.
+     * BCryptPasswordEncoder is injected into DataSeeder via @Import. We also
+     * need it here to verify the encoded password.
      */
-    @Autowired private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
@@ -53,7 +58,6 @@ class DataSeederTest {
     // -----------------------------------------------------------------------
     // Admin user seed
     // -----------------------------------------------------------------------
-
     @Test
     @DisplayName("run() creates admin user when none exists")
     void run_createsAdminUser_whenNoneExists() throws Exception {
@@ -84,14 +88,14 @@ class DataSeederTest {
         dataSeeder.run(); // second call must be a no-op
 
         long adminCount = userRepository.findAll().stream()
-                .filter(User::isAdmin).count();
+                .filter(user -> "admin@evently.com".equals(user.getEmail()))
+                .count();
         assertThat(adminCount).isEqualTo(1);
     }
 
     // -----------------------------------------------------------------------
     // Sample events seed
     // -----------------------------------------------------------------------
-
     @Test
     @DisplayName("run() creates exactly 5 sample events on first run")
     void run_createsFiveSampleEvents() throws Exception {

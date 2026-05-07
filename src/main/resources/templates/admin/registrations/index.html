@@ -38,13 +38,13 @@
     </section>
 
     <section class="admin-card">
-        <p th:text="'Showing ' + ${#lists.size(registrations)} + ' registration(s)'"></p>
+        <p th:text="'Showing ' + ${registrations.totalElements} + ' registration(s)'"></p>
 
-        <div th:if="${#lists.isEmpty(registrations)}" class="empty-state">
+        <div th:if="${registrations.content.isEmpty()}" class="empty-state">
             <p>No registrations found.</p>
         </div>
 
-        <table class="admin-table" th:unless="${#lists.isEmpty(registrations)}">
+        <table class="admin-table" th:unless="${registrations.content.isEmpty()}">
             <thead>
                 <tr>
                     <th>#</th>
@@ -58,10 +58,10 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="reg : ${registrations}">
+                <tr th:each="reg : ${registrations.content}">
                     <td th:text="${reg.id}">1</td>
                     <td>
-                        <a th:href="@{/admin/events/{id}(id=${reg.event.id})}"
+                        <a th:href="@{/admin/registrations/event/{eventId}(eventId=${reg.event.id})}"
                            th:text="${reg.event.title}">Event</a>
                     </td>
                     <td th:text="${reg.attendee.name}">Name</td>
@@ -87,6 +87,14 @@
                 </tr>
             </tbody>
         </table>
+
+        <div class="pagination" th:if="${totalPages > 1}" style="margin-top:1rem;">
+            <a th:href="@{/admin/registrations(eventId=${selectedEventId}, status=${selectedStatus}, page=${currentPage - 1}, size=${pageSize})}"
+               th:if="${currentPage > 0}" class="admin-button">Previous</a>
+            <span>Page <strong th:text="${currentPage + 1}">1</strong> of <strong th:text="${totalPages}">1</strong></span>
+            <a th:href="@{/admin/registrations(eventId=${selectedEventId}, status=${selectedStatus}, page=${currentPage + 1}, size=${pageSize})}"
+               th:if="${currentPage + 1 < totalPages}" class="admin-button">Next</a>
+        </div>
     </section>
 </div>
 </html>

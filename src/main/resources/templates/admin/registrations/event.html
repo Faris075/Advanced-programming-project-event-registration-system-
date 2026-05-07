@@ -1,0 +1,91 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{admin/layout :: content('Event Registrations', ~{::pageBody})}">
+<div th:fragment="pageBody">
+    <div class="admin-page-header" style="display:flex;justify-content:space-between;align-items:center;gap:1rem;">
+        <div>
+            <h1 class="admin-heading" th:text="'Registrations — ' + ${event.title}">Event Registrations</h1>
+            <p th:text="${event.location} + ' • ' + ${#temporals.format(event.dateTime, 'MMM dd, yyyy HH:mm')}">Event details</p>
+        </div>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <a th:href="@{/admin/registrations/event/{eventId}/export.csv(eventId=${event.id})}" class="admin-button">Export CSV</a>
+            <a th:href="@{/admin/registrations}" class="admin-button" style="background:#64748b;">Back to Registrations</a>
+        </div>
+    </div>
+
+    <div class="alert alert-success" th:if="${successMessage}" th:text="${successMessage}"></div>
+    <div class="alert alert-error" th:if="${errorMessage}" th:text="${errorMessage}"></div>
+
+    <section class="admin-card" style="margin-bottom:1.5rem;">
+        <form method="get" th:action="@{/admin/registrations/event/{eventId}(eventId=${event.id})}" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+            <div>
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="" th:selected="${selectedStatus == null}">All Statuses</option>
+                    <option th:each="s : ${allStatuses}"
+                            th:value="${s}"
+                            th:text="${s}"
+                            th:selected="${selectedStatus != null && selectedStatus == s}">STATUS</option>
+                </select>
+            </div>
+            <button type="submit" class="admin-button">Filter</button>
+            <a th:href="@{/admin/registrations/event/{eventId}(eventId=${event.id})}" class="admin-button" style="text-decoration:none;">Clear</a>
+        </form>
+    </section>
+
+    <section class="admin-card" style="margin-bottom:1.5rem;">
+        <h2>Force Add Attendee</h2>
+        <form th:action="@{/admin/registrations/event/{eventId}/force-add(eventId=${event.id})}" method="post" style="display:flex;gap:1rem;align-items:flex-end;flex-wrap:wrap;">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div>
+                <label for="attendeeEmail">Attendee Email</label>
+                <input id="attendeeEmail" name="attendeeEmail" type="email" placeholder="user@example.com" required />
+            </div>
+            <button type="submit" class="admin-button" style="min-width:180px;">Force Add</button>
+        </form>
+    </section>
+
+    <section class="admin-card">
+        <h2>Registrations</h2>
+        <div th:if="${#lists.isEmpty(registrations)}" class="empty-state">
+            <p>No registrations found for this event.</p>
+        </div>
+        <table class="admin-table" th:unless="${#lists.isEmpty(registrations)}">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Attendee</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Payment</th>
+                    <th>Registered</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="reg : ${registrations}">
+                    <td th:text="${reg.id}">1</td>
+                    <td th:text="${reg.attendee.name}">Name</td>
+                    <td th:text="${reg.attendee.email}">email@example.com</td>
+                    <td>
+                        <span th:text="${reg.status}" th:style="${reg.status.name() == 'CONFIRMED' ? 'color:green;font-weight:bold' : (reg.status.name() == 'WAITLISTED' ? 'color:orange;font-weight:bold' : 'color:red;')}">STATUS</span>
+                        <span th:if="${reg.waitlistPosition != null}" th:text="' #' + ${reg.waitlistPosition}"></span>
+                    </td>
+                    <td th:text="${reg.paymentStatus}">PENDING</td>
+                    <td th:text="${#temporals.format(reg.registrationDate, 'MMM dd, yyyy')}">Date</td>
+                    <td style="white-space:nowrap;">
+                        <a th:href="@{/admin/registrations/{id}(id=${reg.id})}" class="admin-button" style="margin-right:0.5rem;text-decoration:none;">View</a>
+                        <form th:if="${reg.status.name() != 'CANCELLED'}"
+                              th:action="@{/admin/registrations/{id}/cancel(id=${reg.id})}"
+                              method="post" style="display:inline"
+                              onsubmit="return confirm('Cancel this registration?')">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <button type="submit" class="admin-button" style="background:#ef4444;">Cancel</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+</div>
+</html>
