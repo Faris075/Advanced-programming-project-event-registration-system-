@@ -60,6 +60,13 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
     List<Registration> findWaitlistedByEventIdOrdered(@Param("eventId") Long eventId);
 
     /**
+     * Counts confirmed registrations for an event. Used to check capacity.
+     */
+    @Query("SELECT COUNT(r) FROM Registration r "
+            + "WHERE r.event.id = :eventId AND r.status = com.evently.model.RegistrationStatus.CONFIRMED")
+    long countConfirmedRegistrations(@Param("eventId") Long eventId);
+
+    /**
      * Counts current waitlisted registrations for an event. Used to assign the
      * next sequential waitlistPosition.
      */
