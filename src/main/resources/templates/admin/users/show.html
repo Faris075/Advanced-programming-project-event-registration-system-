@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!--
+  Admin user detail page — show user info and allow role management/password reset.
+  Controller: AdminUserController.showUser()
+  OWNER: Alei
+-->
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Details — Evently Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/css/app.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin.css}" />
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a class="brand" th:href="@{/}">Evently</a>
+            <ul class="nav-links">
+                <li><a th:href="@{/events}">Events</a></li>
+                <li><a th:href="@{/admin}">Admin Panel</a></li>
+                <li><a th:href="@{/admin/users}">Manage Users</a></li>
+                <li><a th:href="@{/profile}">Profile</a></li>
+                <li>
+                    <form th:action="@{/auth/logout}" method="post" class="logout-form">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn-link">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container" style="max-width:900px;margin:2rem auto;padding:1rem;">
+        <a th:href="@{/admin/users}" style="color:#1845ad;text-decoration:none;margin-bottom:1rem;display:inline-block;">
+            <i class="fas fa-arrow-left"></i> Back to Users
+        </a>
+
+        <h1 style="margin-bottom:2rem;">User Details</h1>
+
+        <!-- Success/Error messages -->
+        <div class="alert alert-success" th:if="${success}" th:text="${success}"></div>
+        <div class="alert alert-error" th:if="${error}" th:text="${error}"></div>
+        <div class="alert alert-info" th:if="${info}" th:text="${info}"></div>
+
+        <div style="display:grid;gap:2rem;">
+
+            <!-- User Information Card -->
+            <section style="background:#fff;padding:1.5rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="font-size:1.3rem;margin-top:0;">Account Information</h2>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+                    <div>
+                        <label style="color:#999;font-size:.85rem;">Name</label>
+                        <p style="margin:0.25rem 0 0 0;font-size:1.1rem;font-weight:500;" th:text="${user.name}"></p>
+                    </div>
+                    <div>
+                        <label style="color:#999;font-size:.85rem;">Email</label>
+                        <p style="margin:0.25rem 0 0 0;font-size:1.1rem;font-weight:500;" th:text="${user.email}"></p>
+                    </div>
+                    <div>
+                        <label style="color:#999;font-size:.85rem;">Status</label>
+                        <p style="margin:0.25rem 0 0 0;">
+                            <span th:if="${user.superAdmin}" class="badge badge-danger">Super Admin</span>
+                            <span th:else-if="${user.admin}" class="badge badge-warning">Admin</span>
+                            <span th:else class="badge badge-secondary">User</span>
+                        </p>
+                    </div>
+                    <div>
+                        <label style="color:#999;font-size:.85rem;">Member Since</label>
+                        <p style="margin:0.25rem 0 0 0;font-size:1rem;" th:text="${#temporals.format(user.createdAt, 'MMM d, yyyy')}"></p>
+                    </div>
+                </div>
+
+                <div>
+                    <label style="color:#999;font-size:.85rem;">Currency Preference</label>
+                    <p style="margin:0.25rem 0 0 0;" th:text="${user.currencyPreference}"></p>
+                </div>
+            </section>
+
+            <!-- Role Management -->
+            <section style="background:#fff;padding:1.5rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="font-size:1.3rem;margin-top:0;">Role Management</h2>
+
+                <div th:if="${user.admin}" style="margin-bottom:1rem;">
+                    <form th:action="@{/admin/users/{id}/demote(id=${user.id})}" method="post" onsubmit="return confirm('Demote this user from admin?');">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="fas fa-shield-alt"></i> Demote from Admin
+                        </button>
+                    </form>
+                </div>
+
+                <div th:if="!${user.admin}" style="margin-bottom:1rem;">
+                    <form th:action="@{/admin/users/{id}/promote(id=${user.id})}" method="post" onsubmit="return confirm('Promote this user to admin?');">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-crown"></i> Promote to Admin
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Password Management -->
+            <section style="background:#fff;padding:1.5rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="font-size:1.3rem;margin-top:0;">Password Management</h2>
+
+                <div th:if="${tempPassword}" class="alert alert-warning">
+                    <strong>Temporary Password Generated:</strong><br>
+                    <code style="background:#f0f0f0;padding:0.25rem 0.5rem;border-radius:0.25rem;" th:text="${tempPassword}"></code><br>
+                    <small>Share this securely with the user. They should change it immediately upon next login.</small>
+                </div>
+
+                <form th:action="@{/admin/users/{id}/reset-password(id=${user.id})}" method="post" onsubmit="return confirm('Generate a temporary password for this user?');">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fas fa-key"></i> Generate Temporary Password
+                    </button>
+                </form>
+            </section>
+
+            <!-- Security Information -->
+            <section style="background:#fff;padding:1.5rem;border-radius:.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                <h2 style="font-size:1.3rem;margin-top:0;">Security Settings</h2>
+
+                <div style="margin-bottom:1rem;">
+                    <label style="color:#999;font-size:.85rem;">Security Question Set</label>
+                    <p style="margin:0.25rem 0 0 0;">
+                        <span th:if="${user.securityQuestion != null and user.securityQuestion.length() > 0}" class="badge badge-success">
+                            <i class="fas fa-check"></i> Yes
+                        </span>
+                        <span th:else class="badge badge-secondary">
+                            <i class="fas fa-times"></i> No
+                        </span>
+                    </p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2024 Evently</p>
+    </footer>
+</body>
+</html>
