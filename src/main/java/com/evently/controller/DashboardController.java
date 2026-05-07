@@ -2,6 +2,7 @@ package com.evently.controller;
 
 import java.util.List;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,9 +32,21 @@ public class DashboardController {
     private final RegistrationRepository registrationRepository;
     private final RegistrationService    registrationService;
 
+
+    
+
     @GetMapping({"", "/"})
     public String dashboard(Authentication authentication, Model model) {
-        String email = authentication.getName().trim().toLowerCase();
+
+
+
+if (authentication == null) {
+            return "redirect:/login";
+        }
+
+
+
+        String email = authentication.getName();
         attendeeRepository.findByEmail(email).ifPresent(attendee ->
                 model.addAttribute("registrations",
                         registrationRepository.findByAttendeeIdOrderByCreatedAtDesc(attendee.getId()))
@@ -45,12 +58,22 @@ public class DashboardController {
     }
 
     @PostMapping("/cancel/{registrationId}")
-    public String cancel(@PathVariable Long registrationId,
+    public String cancel(@PathVariable @NonNull Long registrationId,
                          Authentication authentication,
                          RedirectAttributes redirectAttributes) {
+
+ if (authentication == null) {
+            return "redirect:/login";
+        }
+
+
+
         // Verify the registration belongs to the current user before cancelling.
-        String email = authentication.getName().trim().toLowerCase();
-        registrationRepository.findById(registrationId).ifPresent(reg -> {
+        String email = authentication.getName();
+        registrationRepository.findById(registrationId).ifPresentOrElse(reg -> {
+
+
+
             if (reg.getAttendee().getEmail().equalsIgnoreCase(email)) {
                 try {
                     registrationService.cancel(registrationId);
@@ -63,7 +86,7 @@ public class DashboardController {
                 redirectAttributes.addFlashAttribute("errorMessage",
                         "You are not authorised to cancel this registration.");
             }
-        });
+        }, null);
         return "redirect:/dashboard";
     }
 }

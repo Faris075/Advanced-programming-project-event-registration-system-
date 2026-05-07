@@ -41,26 +41,29 @@ public class RegistrationService {
      * Places the registration as CONFIRMED or WAITLISTED based on remaining capacity.
      */
     @Transactional
-    public Registration register(Long eventId, RegistrationFormDto form) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EventNotFoundException(eventId));
+   public Registration register(Long eventId, RegistrationFormDto form) {
 
-        if (event.getStatus() != EventStatus.PUBLISHED) {
-            throw new IllegalStateException("Event is not open for registration.");
-        }
+    Event event = eventRepository.findById(eventId)
+            .orElseThrow(() -> new EventNotFoundException(eventId));
 
-        // Find or create the attendee contact record (deduplicated by email).
-        String normalizedEmail = form.getEmail().trim().toLowerCase();
-        Attendee attendee = attendeeRepository.findByEmail(normalizedEmail)
-                .orElseGet(() -> attendeeRepository.save(
-                        Attendee.builder()
-                                .name(form.getName())
-                                .email(normalizedEmail)
-                                .phone(form.getPhone())
-                                .company(form.getCompany())
-                                .build()
-                ));
+    if (event.getStatus() != EventStatus.PUBLISHED) {
+        throw new IllegalStateException("Event is not open for registration.");
+    }
 
+    // Normalize email
+    String normalizedEmail = form.getEmail().trim().toLowerCase();
+
+    // Find or create attendee (SAFE VERSION)
+    Attendee attendee = attendeeRepository.findByEmail(normalizedEmail)
+            .orElseGet(() -> attendeeRepository.save(
+                    Attendee.builder()
+                            .name(form.getName())
+                            .email(normalizedEmail)
+                            .phone(form.getPhone())
+                            .company(form.getCompany())
+                            .build()
+            ));
+                    
         // Duplicate check — reject if already confirmed or waitlisted.
         if (registrationRepository.findByEventIdAndAttendeeId(eventId, attendee.getId()).isPresent()) {
             throw new DuplicateRegistrationException(eventId, attendee.getEmail());
