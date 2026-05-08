@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registration Confirmed</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<h1 style="color:green;">Registration Confirmed!</h1>
+
+<div>
+    <p><strong>Event:</strong> <span th:text="${eventName}">Event Name</span></p>
+    <p><strong>Date:</strong> <span th:text="${eventDate}">Event Date</span></p>
+    <p><strong>Location:</strong> <span th:text="${eventLocation}">Event Location</span></p>
+</div>
+
+<br>
+
+<a th:href="@{/events}">Back to Events</a>
+
+</body>
+</html>

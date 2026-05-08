@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Payment</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<h1>Payment Details</h1>
+
+<p style="color:red; font-weight:bold;">
+     This is a demo , do not enter real card details.
+</p>
+
+<form method="post" th:action="@{/register/payment}">
+
+    <label>Card Number:</label><br>
+    <input type="text" name="cardNumber" required><br><br>
+
+    <label>Cardholder Name:</label><br>
+    <input type="text" name="cardHolderName" required><br><br>
+
+    <label>Expiry Date:</label><br>
+    <input type="number" name="expiryMonth" required><br><br>
+
+    <label>Expiry Date:</label><br>
+    <input type="number" name="expiryYear" required><br><br>
+
+    <label>CVV:</label><br>
+    <input type="password" name="cvv" maxlength="4" required><br><br>
+
+    <button type="submit">Pay & Confirm</button>
+
+</form>
+
+<br>
+<a th:href="@{/events}">Back to Events</a>
+
+</body>
+</html>

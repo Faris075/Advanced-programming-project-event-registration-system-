@@ -1,5 +1,6 @@
 package com.evently.service;
 
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -41,7 +42,7 @@ public class EmailService {
         }
 
 
-        catch (Exception e) {
+        catch (MailException e) {
          log.error("Failed to send confirmation email for registration{}: {}",
                       registration.getId(), e.getMessage());
         }
@@ -61,7 +62,7 @@ public void sendWaitlistEmail(Registration registration) {
                 registration.getWaitlistPosition()
             ));
             mailSender.send(msg);
-        } catch (Exception e) {
+        } catch (MailException e) {
 
 
             log.error("Failed to send waitlist email for registration {}: {}",
@@ -82,7 +83,7 @@ public void sendWaitlistEmail(Registration registration) {
             msg.setText(String.format(registration.getAttendee().getName(),registration.getEvent().getTitle()
             ));
             mailSender.send(msg);
-        } catch (Exception e) {
+        } catch (MailException e) {
             log.error("Failed to send promotion email for registration {}: {}",
                       registration.getId(), e.getMessage());
         }

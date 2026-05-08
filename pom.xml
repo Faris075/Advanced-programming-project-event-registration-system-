@@ -90,6 +90,7 @@
             <scope>runtime</scope>
         </dependency>
 
+
         <!-- MariaDB JDBC driver (XAMPP bundles MariaDB, not MySQL) -->
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>

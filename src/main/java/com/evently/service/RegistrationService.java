@@ -22,7 +22,8 @@ import com.evently.repository.RegistrationRepository;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Core booking logic: find-or-create attendee, capacity check, waitlist management.
+ * Core booking logic: find-or-create attendee, capacity check, waitlist
+ * management.
  *
  * OWNER: Mohamed Ahmed
  */
@@ -30,11 +31,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RegistrationService {
 
-    private final EventRepository        eventRepository;
-    private final AttendeeRepository     attendeeRepository;
+    private final EventRepository eventRepository;
+    private final AttendeeRepository attendeeRepository;
     private final RegistrationRepository registrationRepository;
 
-    
     /**
      * Registers an attendee for an event. 
      * Creates an Attendee record if one with the given email does not exist.
@@ -62,7 +62,10 @@ public class RegistrationService {
                             .phone(form.getPhone())
                             .company(form.getCompany())
                             .build()
-            ));
+            )
+
+            )
+            
                     
         // Duplicate check — reject if already confirmed or waitlisted.
         if (registrationRepository.findByEventIdAndAttendeeId(eventId, attendee.getId()).isPresent()) {
@@ -115,7 +118,8 @@ public class RegistrationService {
     /** Promotes the head of the waitlist and re-sequences remaining positions. */
     private void promoteWaitlist(Long eventId) {
         List<Registration> waitlisted = registrationRepository.findWaitlistedByEventIdOrdered(eventId);
-        if (waitlisted.isEmpty()) return;
+        if (waitlisted.isEmpty())
+            return;
 
         Registration head = waitlisted.get(0);
         head.setStatus(RegistrationStatus.CONFIRMED);

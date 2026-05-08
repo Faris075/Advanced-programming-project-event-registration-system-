@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Waitlisted</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<h1 style="color:orange;">You are on the waitlist</h1>
+
+<p>
+    Event: <strong th:text="${eventName}">Event Name</strong>
+</p>
+
+<p>
+    Your position in waitlist: 
+    <strong th:text="${waitlistPosition}">#X</strong>
+</p>
+
+<p>
+    We will notify you if a spot becomes available.
+</p>
+
+<br>
+
+<a th:href="@{/events/{id}(id=${eventId})}">Back to Event</a>
+
+</body>
+</html>
