@@ -9,9 +9,5 @@
 DB_USERNAME=root
 DB_PASSWORD=your_mysql_root_password
 
-MAIL_HOST=smtp.mailtrap.io
-MAIL_PORT=2525
-MAIL_USERNAME=your_mailtrap_inbox_username
-MAIL_PASSWORD=your_mailtrap_inbox_password
-
 APP_SECRET=local-dev-secret-replace-me
+# Mailtrap credentials go in .env (see .env.example or project root .env)

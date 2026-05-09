@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import io.github.cdimascio.dotenv.Dotenv;
+
 /**
  * Entry point for the Evently application.
  *
@@ -17,6 +19,18 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class EventlyApplication {
 
     public static void main(String[] args) {
+        // Load .env into System properties before Spring's Environment is built.
+        // ignoreIfMissing() makes this a no-op in CI / production where .env is absent.
+        Dotenv dotenv = Dotenv.configure()
+                .directory("./")
+                .ignoreIfMissing()
+                .load();
+        dotenv.entries().forEach(e -> {
+            if (System.getProperty(e.getKey()) == null) {
+                System.setProperty(e.getKey(), e.getValue());
+            }
+        });
+
         SpringApplication.run(EventlyApplication.class, args);
     }
 }
