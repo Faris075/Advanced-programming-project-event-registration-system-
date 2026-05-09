@@ -62,12 +62,9 @@ public class RegistrationService {
                             .phone(form.getPhone())
                             .company(form.getCompany())
                             .build()
-            )
+            ));
 
-            )
-            
-                    
-        // Duplicate check — reject if already confirmed or waitlisted.
+    // Duplicate check — reject if already confirmed or waitlisted.
         if (registrationRepository.findByEventIdAndAttendeeId(eventId, attendee.getId()).isPresent()) {
             throw new DuplicateRegistrationException(eventId, attendee.getEmail());
         }
