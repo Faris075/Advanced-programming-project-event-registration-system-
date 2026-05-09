@@ -20,14 +20,15 @@ import com.evently.model.Attendee;
  */
 @DataJpaTest
 @ActiveProfiles("test")
+@SuppressWarnings("null")
 class AttendeeRepositoryTest {
 
     @Autowired
     private AttendeeRepository attendeeRepository;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
-        attendeeRepository.deleteAll();
     }
 
     @Test

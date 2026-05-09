@@ -64,7 +64,8 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
      */
     @EntityGraph(attributePaths = {"event", "attendee"})
     @Override
-    Page<Registration> findAll(org.springframework.data.domain.Pageable pageable);
+    @org.springframework.lang.NonNull
+    Page<Registration> findAll(@org.springframework.lang.NonNull org.springframework.data.domain.Pageable pageable);
 
     /**
      * Load a single registration with attendee eagerly (used for ownership checks

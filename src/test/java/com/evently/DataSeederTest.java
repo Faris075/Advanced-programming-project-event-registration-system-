@@ -49,8 +49,8 @@ class DataSeederTest {
     private PasswordEncoder passwordEncoder;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
-        // Start each test with a clean database to test seeding from scratch.
         eventRepository.deleteAll();
         userRepository.deleteAll();
     }

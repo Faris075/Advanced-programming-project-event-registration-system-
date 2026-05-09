@@ -1,18 +1,13 @@
 package com.evently.controller.admin;
 
-import com.evently.model.Event;
-import com.evently.model.Registration;
-import com.evently.model.RegistrationStatus;
-import com.evently.repository.EventRepository;
-import com.evently.repository.RegistrationRepository;
-import com.evently.service.AdminRegistrationService;
-import com.evently.service.RegistrationService;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +17,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import com.evently.model.Event;
+import com.evently.model.Registration;
+import com.evently.model.RegistrationStatus;
+import com.evently.repository.EventRepository;
+import com.evently.repository.RegistrationRepository;
+import com.evently.service.AdminRegistrationService;
+import com.evently.service.RegistrationService;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Admin management of registrations: list, view, export, and force-add.
@@ -66,6 +69,7 @@ public class AdminRegistrationController {
         Registration reg = registrationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Registration not found: " + id));
         model.addAttribute("registration", reg);
+        model.addAttribute("allStatuses", RegistrationStatus.values());
         return "admin/registrations/show";
     }
 
@@ -98,7 +102,7 @@ public class AdminRegistrationController {
     }
 
     @GetMapping("/event/{eventId}")
-    public String showEventRegistrations(@PathVariable Long eventId,
+    public String showEventRegistrations(@PathVariable @NonNull Long eventId,
             @RequestParam(required = false) RegistrationStatus status,
             Model model) {
         Event event = eventRepository.findById(eventId)

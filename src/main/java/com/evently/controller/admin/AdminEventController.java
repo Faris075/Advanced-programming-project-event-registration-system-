@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -75,7 +76,7 @@ public class AdminEventController {
     }
 
     @GetMapping("/{id}/edit")
-    public String showEditForm(@PathVariable Long id, Model model) {
+    public String showEditForm(@PathVariable @NonNull Long id, Model model) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException(id));
 
@@ -85,7 +86,7 @@ public class AdminEventController {
     }
 
     @PostMapping("/{id}/edit")
-    public String updateEvent(@PathVariable Long id,
+    public String updateEvent(@PathVariable @NonNull Long id,
             @Valid EventDto eventDto,
             BindingResult bindingResult,
             Model model,
@@ -111,7 +112,7 @@ public class AdminEventController {
     }
 
     @PostMapping("/{id}/publish")
-    public String publishEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String publishEvent(@PathVariable @NonNull Long id, RedirectAttributes redirectAttributes) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException(id));
 
@@ -128,7 +129,7 @@ public class AdminEventController {
 
     @PostMapping("/{id}/cancel")
     @Transactional
-    public String cancelEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String cancelEvent(@PathVariable @NonNull Long id, RedirectAttributes redirectAttributes) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException(id));
 
@@ -150,7 +151,7 @@ public class AdminEventController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteEvent(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deleteEvent(@PathVariable @NonNull Long id, RedirectAttributes redirectAttributes) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new EventNotFoundException(id));
 

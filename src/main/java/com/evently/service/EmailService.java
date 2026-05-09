@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -30,7 +31,11 @@ public class EmailService {
     private final String inboxId;
     private final String fromEmail;
 
+    /**
+     * @param builder  Spring Boot's auto-configured RestClient.Builder (includes Jackson converters)
+     */
     public EmailService(
+            RestClient.Builder builder,
             @Value("${mailtrap.api.token:}") String apiToken,
             @Value("${mailtrap.inbox.id:}") String inboxId,
             @Value("${mailtrap.from.email:noreply@evently.dev}") String fromEmail) {
@@ -42,10 +47,11 @@ public class EmailService {
                 ? "https://sandbox.api.mailtrap.io"
                 : "https://send.api.mailtrap.io";
 
-        this.restClient = RestClient.builder()
+        log.info("EmailService: baseUrl={}, inboxId={}, fromEmail={}", baseUrl, inboxId, fromEmail);
+
+        this.restClient = builder
                 .baseUrl(baseUrl)
                 .defaultHeader("Authorization", "Bearer " + apiToken)
-                .defaultHeader("Content-Type", "application/json")
                 .build();
     }
 
@@ -53,7 +59,7 @@ public class EmailService {
     public void sendConfirmationEmail(Registration registration) {
         try {
             Event event = registration.getEvent();
-            String subject = "Registration Confirmed — " + event.getTitle();
+            String subject = "Registration Confirmed â€” " + event.getTitle();
             String body = String.format(
                     "Hello %s,%n%n" +
                     "Your registration for \"%s\" has been confirmed!%n%n" +
@@ -79,7 +85,7 @@ public class EmailService {
     public void sendWaitlistEmail(Registration registration) {
         try {
             Event event = registration.getEvent();
-            String subject = "You're on the Waitlist — " + event.getTitle();
+            String subject = "You're on the Waitlist â€” " + event.getTitle();
             String body = String.format(
                     "Hello %s,%n%n" +
                     "The event \"%s\" is currently full, but you have been added to the waitlist.%n" +
@@ -102,7 +108,7 @@ public class EmailService {
     public void sendWaitlistPromotionEmail(Registration registration) {
         try {
             Event event = registration.getEvent();
-            String subject = "Great news — You got a spot! — " + event.getTitle();
+            String subject = "Great news â€” You got a spot! â€” " + event.getTitle();
             String body = String.format(
                     "Hello %s,%n%n" +
                     "Good news! A spot has opened up for \"%s\" and you have been confirmed.%n%n" +
@@ -130,7 +136,7 @@ public class EmailService {
 
     private void send(String toEmail, String subject, String text) {
         if (toEmail == null || toEmail.isBlank()) {
-            log.warn("Skipping email '{}' — recipient address is blank", subject);
+            log.warn("Skipping email '{}' â€” recipient address is blank", subject);
             return;
         }
 
@@ -147,97 +153,13 @@ public class EmailService {
         try {
             restClient.post()
                     .uri(path)
+                    .contentType(MediaType.APPLICATION_JSON)
                     .body(payload)
                     .retrieve()
                     .toBodilessEntity();
-            log.debug("Email sent to {} — {}", toEmail, subject);
+            log.info("Email sent to {} - {}", toEmail, subject);
         } catch (RestClientException e) {
             log.error("Mailtrap API error sending to {}: {}", toEmail, e.getMessage());
         }
     }
 }
-
-
-
-
-@Service
-@RequiredArgsConstructor
-@Slf4j
-public class EmailService {
-
-    private final JavaMailSender mailSender;
-
-    
-    @Async 
-
-    public void sendConfirmationEmail(Registration registration) {
-
-
-        try {
-
-              Event event = registration.getEvent();
-            SimpleMailMessage msg = new SimpleMailMessage();
-          msg.setTo(registration.getAttendee().getEmail());
-            msg.setSubject("Registration Confirmed" + event.getTitle());
-            msg.setText(String.format(registration.getAttendee().getName(), event.getTitle(), event.getDateTime() ) );
-
-
-
-            mailSender.send(msg);
-
-        }
-
-
-        catch (MailException e) {
-         log.error("Failed to send confirmation email for registration{}: {}",
-                      registration.getId(), e.getMessage());
-        }
-    }
-
-@Async
-
-
-public void sendWaitlistEmail(Registration registration) {
-        try {
-              Event event = registration.getEvent();
-            SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setTo(registration.getAttendee().getEmail());
-            msg.setSubject("You're on the Waitlist — " + event.getTitle());
-            msg.setText(String.format(
-                registration.getAttendee().getName(),event.getTitle(),
-                registration.getWaitlistPosition()
-            ));
-            mailSender.send(msg);
-        } catch (MailException e) {
-
-
-            log.error("Failed to send waitlist email for registration {}: {}",
-                      registration.getId(), e.getMessage());
-
-        }
-    }
-
-
-
-
-    @Async
-    public void sendWaitlistPromotionEmail(Registration registration) {
-        try {
-            SimpleMailMessage msg = new SimpleMailMessage();
-            msg.setTo(registration.getAttendee().getEmail());
-            msg.setSubject("Great news — You got a spot! — " + registration.getEvent().getTitle());
-            msg.setText(String.format(registration.getAttendee().getName(),registration.getEvent().getTitle()
-            ));
-            mailSender.send(msg);
-        } catch (MailException e) {
-            log.error("Failed to send promotion email for registration {}: {}",
-                      registration.getId(), e.getMessage());
-        }
-    }
-
-
-
-
-    }
-
-    

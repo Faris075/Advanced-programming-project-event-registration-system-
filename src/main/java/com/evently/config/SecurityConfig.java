@@ -40,9 +40,16 @@ public class SecurityConfig {
     private String rememberMeKey;
 
     private final UserRepository userRepository;
+    private final SessionTrackingAuthSuccessHandler sessionSuccessHandler;
+    private final SessionTrackingLogoutHandler sessionLogoutHandler;
 
-    public SecurityConfig(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public SecurityConfig(UserRepository userRepository,
+                          PasswordEncoder passwordEncoder,
+                          SessionTrackingAuthSuccessHandler sessionSuccessHandler,
+                          SessionTrackingLogoutHandler sessionLogoutHandler) {
+        this.userRepository        = userRepository;
+        this.sessionSuccessHandler = sessionSuccessHandler;
+        this.sessionLogoutHandler  = sessionLogoutHandler;
     }
 
     /**
@@ -121,12 +128,13 @@ public class SecurityConfig {
                 .formLogin(form -> form
                 .loginPage("/auth/login")
                 .loginProcessingUrl("/auth/login")
-                .defaultSuccessUrl("/events", true)
+                .successHandler(sessionSuccessHandler)
                 .failureUrl("/auth/login?error")
                 .permitAll()
                 )
                 .logout(logout -> logout
                 .logoutUrl("/auth/logout")
+                .addLogoutHandler(sessionLogoutHandler)
                 .logoutSuccessUrl("/")
                 .deleteCookies("JSESSIONID", "remember-me")
                 .permitAll()

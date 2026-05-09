@@ -39,6 +39,7 @@ public class User {
     private String password;
 
     /** true = full admin access to /admin/** endpoints. */
+    @Builder.Default
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin = false;
 
@@ -47,6 +48,7 @@ public class User {
      * Super admins have all admin privileges plus the exclusive ability
      * to promote or demote other users to/from the admin role.
      */
+    @Builder.Default
     @Column(name = "is_super_admin", nullable = false)
     private boolean isSuperAdmin = false;
 
@@ -59,6 +61,7 @@ public class User {
     private String securityAnswer;
 
     /** User's preferred display currency code, e.g. "USD", "EUR", "EGP". */
+    @Builder.Default
     @Column(name = "currency_preference", nullable = false, length = 10)
     private String currencyPreference = "USD";
 

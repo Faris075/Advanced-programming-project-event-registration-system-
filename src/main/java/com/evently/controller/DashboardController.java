@@ -17,6 +17,7 @@ import com.evently.repository.RegistrationRepository;
 import com.evently.service.RegistrationService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Shows the authenticated user's registration history and lets them cancel.
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequestMapping("/dashboard")
 @RequiredArgsConstructor
+@Slf4j
 public class DashboardController {
 
     private final AttendeeRepository     attendeeRepository;
@@ -72,23 +74,32 @@ if (authentication == null) {
         // Use findWithAssociationsById to avoid LazyInitializationException on reg.getAttendee()
         // when open-in-view is false.
         String email = authentication.getName();
-        registrationRepository.findWithAssociationsById(registrationId).ifPresentOrElse(reg -> {
+        var optReg = registrationRepository.findWithAssociationsById(registrationId);
+        if (optReg.isEmpty()) {
+            log.warn("Cancel attempt for non-existent registration {} by {}", registrationId, email);
+            redirectAttributes.addFlashAttribute("errorMessage", "Registration not found.");
+            return "redirect:/dashboard";
+        }
 
+        var reg = optReg.get();
+        if (!reg.getAttendee().getEmail().equalsIgnoreCase(email)) {
+            log.warn("Unauthorised cancel attempt: registration {} belongs to {}, requested by {}",
+                    registrationId, reg.getAttendee().getEmail(), email);
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "You are not authorised to cancel this registration.");
+            return "redirect:/dashboard";
+        }
 
-
-            if (reg.getAttendee().getEmail().equalsIgnoreCase(email)) {
-                try {
-                    registrationService.cancel(registrationId);
-                    redirectAttributes.addFlashAttribute("successMessage",
-                            "Your registration has been cancelled.");
-                } catch (Exception e) {
-                    redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-                }
-            } else {
-                redirectAttributes.addFlashAttribute("errorMessage",
-                        "You are not authorised to cancel this registration.");
-            }
-        }, null);
+        try {
+            registrationService.cancel(registrationId);
+            log.info("Registration {} cancelled by {}", registrationId, email);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Your registration has been cancelled.");
+        } catch (Exception e) {
+            log.error("Failed to cancel registration {} for {}: {}", registrationId, email, e.getMessage(), e);
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    e.getMessage() != null ? e.getMessage() : "An unexpected error occurred. Please try again.");
+        }
         return "redirect:/dashboard";
     }
 }

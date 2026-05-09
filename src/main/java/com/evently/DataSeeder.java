@@ -30,6 +30,7 @@ import com.evently.repository.UserRepository;
  * OWNER: Faris
  */
 @Component
+@SuppressWarnings("null")
 public class DataSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);

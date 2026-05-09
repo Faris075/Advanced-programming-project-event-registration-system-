@@ -78,7 +78,7 @@
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <label for="status">Force Status Change</label>
                 <select id="status" name="status" style="margin:0.5rem 0;width:100%;">
-                    <option th:each="s : ${T(com.evently.model.RegistrationStatus).values()}"
+                    <option th:each="s : ${allStatuses}"
                             th:value="${s}"
                             th:text="${s}"
                             th:selected="${registration.status == s}">STATUS</option>

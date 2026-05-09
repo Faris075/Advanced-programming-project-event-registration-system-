@@ -28,14 +28,15 @@ import com.evently.repository.EventRepository;
 @DataJpaTest
 @ActiveProfiles("test")
 @Import(EventScheduler.class)
+@SuppressWarnings("null")
 class EventSchedulerTest {
 
     @Autowired private EventScheduler  eventScheduler;
     @Autowired private EventRepository eventRepository;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
-        eventRepository.deleteAll();
     }
 
     @Test

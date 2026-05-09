@@ -20,6 +20,7 @@ import com.evently.repository.EventRepository;
 import com.evently.repository.RegistrationRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Core booking logic: find-or-create attendee, capacity check, waitlist
@@ -29,11 +30,14 @@ import lombok.RequiredArgsConstructor;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@SuppressWarnings("null")
 public class RegistrationService {
 
     private final EventRepository eventRepository;
     private final AttendeeRepository attendeeRepository;
     private final RegistrationRepository registrationRepository;
+    private final EmailService emailService;
 
     /**
      * Registers an attendee for an event. 
@@ -85,7 +89,13 @@ public class RegistrationService {
             builder.status(RegistrationStatus.CONFIRMED);
         }
 
-        return registrationRepository.save(builder.build());
+        Registration saved = registrationRepository.save(builder.build());
+        if (saved.getStatus() == RegistrationStatus.CONFIRMED) {
+            emailService.sendConfirmationEmail(saved);
+        } else {
+            emailService.sendWaitlistEmail(saved);
+        }
+        return saved;
     }
 
     /**
@@ -97,7 +107,10 @@ public class RegistrationService {
         Registration reg = registrationRepository.findById(registrationId)
                 .orElseThrow(() -> new IllegalArgumentException("Registration not found: " + registrationId));
 
+        log.info("Cancelling registration {}: current status={}", registrationId, reg.getStatus());
+
         if (reg.getStatus() == RegistrationStatus.CANCELLED) {
+            log.info("Registration {} already cancelled — no-op", registrationId);
             return; // idempotent
         }
 
@@ -105,6 +118,7 @@ public class RegistrationService {
         reg.setStatus(RegistrationStatus.CANCELLED);
         reg.setWaitlistPosition(null);
         registrationRepository.save(reg);
+        log.info("Registration {} status set to CANCELLED (was {})", registrationId, previousStatus);
 
         // A freed confirmed slot triggers waitlist promotion.
         if (previousStatus == RegistrationStatus.CONFIRMED) {
@@ -122,6 +136,7 @@ public class RegistrationService {
         head.setStatus(RegistrationStatus.CONFIRMED);
         head.setWaitlistPosition(null);
         registrationRepository.save(head);
+        emailService.sendWaitlistPromotionEmail(head);
 
         // Re-number remaining waitlist entries so positions stay sequential.
         for (int i = 1; i < waitlisted.size(); i++) {

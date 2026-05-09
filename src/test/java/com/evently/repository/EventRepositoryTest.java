@@ -25,14 +25,15 @@ import com.evently.model.EventStatus;
  */
 @DataJpaTest
 @ActiveProfiles("test")
+@SuppressWarnings("null")
 class EventRepositoryTest {
 
     @Autowired
     private EventRepository eventRepository;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
-        eventRepository.deleteAll();
     }
 
     // -----------------------------------------------------------------------

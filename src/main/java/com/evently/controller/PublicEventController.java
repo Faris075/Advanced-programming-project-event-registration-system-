@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,7 +58,7 @@ public class PublicEventController {
     }
 
     @GetMapping("/events/{id}")
-    public String showEvent(@PathVariable Long id, Model model,
+    public String showEvent(@PathVariable @NonNull Long id, Model model,
                             Authentication authentication) {
         Event event = eventRepository.findById(id)
             .orElseThrow(() -> new EventNotFoundException("Event not found: " + id));

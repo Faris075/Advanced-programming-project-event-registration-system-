@@ -1,5 +1,4 @@
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       th:replace="~{admin/layout :: content('Admin Events', ~{::pageBody})}">
 <div th:fragment="pageBody">
 
@@ -43,19 +42,19 @@
                         </a>
 
                         <form th:action="@{/admin/events/{id}/publish(id=${event.id})}" method="post" style="display:inline;"
-                              th:if="${event.status == T(com.evently.model.EventStatus).DRAFT}">
+                              th:if="${event.status.name() == 'DRAFT'}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="admin-button" style="background:linear-gradient(135deg,#16a34a,#22c55e);"><i class="fas fa-globe"></i> Publish</button>
                         </form>
 
                         <form th:action="@{/admin/events/{id}/cancel(id=${event.id})}" method="post" style="display:inline;"
-                              th:if="${event.status == T(com.evently.model.EventStatus).PUBLISHED}">
+                              th:if="${event.status.name() == 'PUBLISHED'}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="admin-button" style="background:linear-gradient(135deg,#b45309,#f09819);"><i class="fas fa-ban"></i> Cancel</button>
                         </form>
 
                         <form th:action="@{/admin/events/{id}/delete(id=${event.id})}" method="post" style="display:inline;"
-                              th:if="${event.status == T(com.evently.model.EventStatus).DRAFT or event.status == T(com.evently.model.EventStatus).CANCELLED}">
+                              th:if="${event.status.name() == 'DRAFT' or event.status.name() == 'CANCELLED'}">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <button type="submit" class="admin-button danger" onclick="return confirm('Delete this event?')">
                                 <i class="fas fa-trash"></i> Delete

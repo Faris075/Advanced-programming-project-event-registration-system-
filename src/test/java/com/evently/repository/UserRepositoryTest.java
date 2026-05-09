@@ -31,6 +31,7 @@ class UserRepositoryTest {
 
     /** Clean slate before each test to prevent state leakage. */
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
         userRepository.deleteAll();
     }
