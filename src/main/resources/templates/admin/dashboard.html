@@ -5,6 +5,7 @@
 
     <div class="admin-page-header">
         <h1 class="admin-heading"><i class="fas fa-tachometer-alt" style="margin-right:.5rem;opacity:.7;"></i>Dashboard</h1>
+        <a th:href="@{/admin/events/create}" class="admin-button"><i class="fas fa-plus"></i> Create Event</a>
     </div>
 
     <!-- Stat cards -->
@@ -54,7 +55,7 @@
             </thead>
             <tbody>
                 <tr th:each="event : ${recentEvents}">
-                    <td><a th:href="@{/admin/events/{id}(id=${event.id})}" th:text="${event.title}" style="color:#23a2f6;font-weight:500;">Event title</a></td>
+                    <td><a th:href="@{/admin/events/{id}/edit(id=${event.id})}" th:text="${event.title}" style="color:#23a2f6;font-weight:500;">Event title</a></td>
                     <td th:text="${#temporals.format(event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</td>
                     <td>
                         <span class="badge badge-published" th:if="${event.status.name() == 'PUBLISHED'}" th:text="${event.status}"></span>

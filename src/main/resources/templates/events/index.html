@@ -12,7 +12,7 @@
             <h2 th:text="${event.title}">Event Title</h2>
             <p class="event-meta" th:text="${#temporals.format(event.dateTime, 'MMM dd, yyyy HH:mm')}">Date</p>
             <p class="event-location" th:text="${event.location}">Location</p>
-            <p class="event-price" th:text="${event.price != null && event.price.compareTo(T(java.math.BigDecimal).ZERO) > 0 ? '$' + event.price : 'Free'}">Free</p>
+            <p class="event-price" th:text="${event.free ? 'Free' : '$' + event.price}">Free</p>
             <p class="event-capacity">Capacity: <span th:text="${event.capacity}">100</span> spots</p>
             <span th:if="${registeredEventIds != null and registeredEventIds.contains(event.id)}"
                   class="badge badge-registered"

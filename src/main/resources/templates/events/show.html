@@ -14,7 +14,7 @@
                 <p class="event-location" th:text="${event.location}">Location</p>
             </div>
             <div class="event-status-panel">
-                <p class="event-price" th:text="${event.price != null && event.price.compareTo(T(java.math.BigDecimal).ZERO) > 0 ? '$' + event.price : 'Free'}">Free</p>
+                <p class="event-price" th:text="${event.free ? 'Free' : '$' + event.price}">Free</p>
                 <p><strong>Capacity:</strong> <span th:text="${event.capacity}">100</span></p>
                 <p th:if="${isSoldOut}" class="badge badge-sold-out">Sold Out</p>
                 <p th:unless="${isSoldOut}" class="badge badge-available" th:text="${spotsLeft} + ' spots left'">12 spots left</p>
