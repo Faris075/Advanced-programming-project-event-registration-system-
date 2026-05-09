@@ -69,8 +69,10 @@ if (authentication == null) {
 
 
         // Verify the registration belongs to the current user before cancelling.
+        // Use findWithAssociationsById to avoid LazyInitializationException on reg.getAttendee()
+        // when open-in-view is false.
         String email = authentication.getName();
-        registrationRepository.findById(registrationId).ifPresentOrElse(reg -> {
+        registrationRepository.findWithAssociationsById(registrationId).ifPresentOrElse(reg -> {
 
 
 

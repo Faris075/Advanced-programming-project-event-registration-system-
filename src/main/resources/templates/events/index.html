@@ -14,7 +14,13 @@
             <p class="event-location" th:text="${event.location}">Location</p>
             <p class="event-price" th:text="${event.price != null && event.price.compareTo(T(java.math.BigDecimal).ZERO) > 0 ? '$' + event.price : 'Free'}">Free</p>
             <p class="event-capacity">Capacity: <span th:text="${event.capacity}">100</span> spots</p>
-            <a th:href="@{/events/{id}(id=${event.id})}" class="btn">View Details</a>
+            <span th:if="${registeredEventIds != null and registeredEventIds.contains(event.id)}"
+                  class="badge badge-registered"
+                  style="display:inline-block;background:#28a745;color:#fff;padding:.3rem .7rem;border-radius:.3rem;font-size:.85rem;margin-bottom:.5rem;">
+                ✓ Registered
+            </span>
+            <a th:href="@{/events/{id}(id=${event.id})}" class="btn"
+               th:text="${registeredEventIds != null and registeredEventIds.contains(event.id) ? 'View Event' : 'View Details'}">View Details</a>
         </div>
     </div>
 

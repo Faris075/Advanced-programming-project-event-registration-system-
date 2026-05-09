@@ -1,40 +1,67 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Payment</title>
-    <meta charset="UTF-8">
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: content('Payment', ~{::pageBody})}">
+<div th:fragment="pageBody">
 
-<h1>Payment Details</h1>
+    <section class="page-header" style="text-align:center;">
+        <h1>&#x1F389; You're Registered!</h1>
+        <p>Complete your payment to confirm your spot at the event.</p>
+    </section>
 
-<p style="color:red; font-weight:bold;">
-     This is a demo , do not enter real card details.
-</p>
+    <!-- Registration summary card -->
+    <div class="glass-card" style="max-width:580px;margin:0 auto 1.5rem;">
+        <h2 style="font-size:1.05rem;font-weight:600;margin:0 0 1.25rem;color:rgba(255,255,255,.9);">
+            Booking Summary
+        </h2>
 
-<form method="post" th:action="@{/register/payment}">
+        <div style="display:grid;gap:.75rem;">
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:.6rem;">
+                <span style="color:rgba(255,255,255,.55);">Event</span>
+                <span style="font-weight:500;" th:text="${registration.event.title}">Event Name</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:.6rem;">
+                <span style="color:rgba(255,255,255,.55);">Date</span>
+                <span th:text="${#temporals.format(registration.event.dateTime, 'EEE, MMM d yyyy · h:mm a')}">Date</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:.6rem;">
+                <span style="color:rgba(255,255,255,.55);">Location</span>
+                <span th:text="${registration.event.location}">Location</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:.6rem;">
+                <span style="color:rgba(255,255,255,.55);">Attendee</span>
+                <span th:text="${registration.attendee.name}">Name</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:.6rem;">
+                <span style="color:rgba(255,255,255,.55);">Status</span>
+                <span style="color:var(--success);font-weight:600;">&#x2713; CONFIRMED</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding-bottom:.25rem;">
+                <span style="color:rgba(255,255,255,.55);">Payment Status</span>
+                <span style="color:var(--orange-end);font-weight:600;" th:text="${registration.paymentStatus}">PENDING</span>
+            </div>
+        </div>
+    </div>
 
-    <label>Card Number:</label><br>
-    <input type="text" name="cardNumber" required><br><br>
+    <!-- Payment action card -->
+    <div class="glass-card" style="max-width:580px;margin:0 auto 1.5rem;">
+        <h2 style="font-size:1.05rem;font-weight:600;margin:0 0 .75rem;color:rgba(255,255,255,.9);">
+            &#x1F4B3; Payment
+        </h2>
+        <p style="color:rgba(255,255,255,.55);font-size:.9rem;margin-bottom:1.25rem;">
+            Secure your registration by completing payment. You will receive a confirmation email once the payment is processed.
+        </p>
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <!-- Mock "Pay Now" — replace with real payment gateway in production -->
+            <form th:action="@{/register/payment/{id}/confirm(id=${registration.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn">
+                    &#x1F4B3; Pay Now
+                </button>
+            </form>
+            <a th:href="@{/dashboard}" class="btn" style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);">
+                Pay Later
+            </a>
+        </div>
+    </div>
 
-    <label>Cardholder Name:</label><br>
-    <input type="text" name="cardHolderName" required><br><br>
-
-    <label>Expiry Date:</label><br>
-    <input type="number" name="expiryMonth" required><br><br>
-
-    <label>Expiry Date:</label><br>
-    <input type="number" name="expiryYear" required><br><br>
-
-    <label>CVV:</label><br>
-    <input type="password" name="cvv" maxlength="4" required><br><br>
-
-    <button type="submit">Pay & Confirm</button>
-
-</form>
-
-<br>
-<a th:href="@{/events}">Back to Events</a>
-
-</body>
+</div>
 </html>

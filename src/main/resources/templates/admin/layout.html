@@ -17,22 +17,22 @@
     <span class="admin-brand">Evently</span>
 
     <a th:href="@{/admin}" class="admin-tab"
-       th:classappend="${#strings.startsWith(#request.requestURI, '/admin') and
-                         !#strings.startsWith(#request.requestURI, '/admin/events') and
-                         !#strings.startsWith(#request.requestURI, '/admin/registrations') and
-                         !#strings.startsWith(#request.requestURI, '/admin/users')} ? ' active'">
+       th:classappend="${#strings.startsWith(currentUri, '/admin') and
+                         !#strings.startsWith(currentUri, '/admin/events') and
+                         !#strings.startsWith(currentUri, '/admin/registrations') and
+                         !#strings.startsWith(currentUri, '/admin/users')} ? ' active'">
         <i class="fas fa-tachometer-alt"></i> Dashboard
     </a>
     <a th:href="@{/admin/events}" class="admin-tab"
-       th:classappend="${#strings.startsWith(#request.requestURI, '/admin/events')} ? ' active'">
+       th:classappend="${#strings.startsWith(currentUri, '/admin/events')} ? ' active'">
         <i class="fas fa-calendar-alt"></i> Events
     </a>
     <a th:href="@{/admin/registrations}" class="admin-tab"
-       th:classappend="${#strings.startsWith(#request.requestURI, '/admin/registrations')} ? ' active'">
+       th:classappend="${#strings.startsWith(currentUri, '/admin/registrations')} ? ' active'">
         <i class="fas fa-ticket-alt"></i> Registrations
     </a>
     <a th:href="@{/admin/users}" class="admin-tab"
-       th:classappend="${#strings.startsWith(#request.requestURI, '/admin/users')} ? ' active'">
+       th:classappend="${#strings.startsWith(currentUri, '/admin/users')} ? ' active'">
         <i class="fas fa-users"></i> Users
     </a>
 

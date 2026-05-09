@@ -27,9 +27,10 @@ import com.evently.model.EventStatus;
 import com.evently.repository.EventRepository;
 import com.evently.repository.RegistrationRepository;
 import com.evently.repository.UserRepository;
+import com.evently.web.RequestUriAdvice;
 
 @WebMvcTest(PublicEventController.class)
-@Import({SecurityConfig.class, PasswordEncoderConfig.class})
+@Import({SecurityConfig.class, PasswordEncoderConfig.class, RequestUriAdvice.class})
 class PublicEventControllerTest {
 
     @Autowired

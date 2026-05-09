@@ -38,7 +38,14 @@
                 <p>You need to <a th:href="@{/auth/login}">sign in</a> to register for this event.</p>
             </div>
 
-            <form sec:authorize="isAuthenticated()"
+            <!-- Already registered message -->
+            <div sec:authorize="isAuthenticated()" th:if="${isUserRegistered}"
+                 class="alert alert-success" style="margin-top:1rem;">
+                <i class="fas fa-check-circle"></i> You are already registered for this event.
+            </div>
+
+            <!-- Registration form (only shown when not yet registered) -->
+            <form sec:authorize="isAuthenticated()" th:unless="${isUserRegistered}"
                   th:action="@{/register/{id}(id=${event.id})}" method="post" th:object="${form}">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <div class="form-row">

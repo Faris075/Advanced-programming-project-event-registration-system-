@@ -1,13 +1,8 @@
 package com.evently.controller;
 
-import com.evently.dto.RegistrationFormDto;
-import com.evently.exception.EventNotFoundException;
-import com.evently.model.Event;
-import com.evently.model.EventStatus;
-import com.evently.repository.EventRepository;
-import com.evently.repository.RegistrationRepository;
-import com.evently.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.Collections;
+import java.util.HashSet;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
@@ -16,6 +11,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import com.evently.dto.RegistrationFormDto;
+import com.evently.exception.EventNotFoundException;
+import com.evently.model.Event;
+import com.evently.model.EventStatus;
+import com.evently.repository.EventRepository;
+import com.evently.repository.RegistrationRepository;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Serves the public event listing and event detail pages.
@@ -29,11 +33,10 @@ public class PublicEventController {
 
     private final EventRepository        eventRepository;
     private final RegistrationRepository registrationRepository;
-    private final UserRepository         userRepository;
 
     @GetMapping("/events")
     public String listEvents(@RequestParam(defaultValue = "0") int page,
-            Model model) {
+            Model model, Authentication authentication) {
         Page<Event> events = eventRepository
                 .findByStatusOrderByDateTimeAsc(EventStatus.PUBLISHED,
                         PageRequest.of(page, 10));
@@ -41,6 +44,15 @@ public class PublicEventController {
         model.addAttribute("events", events);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", events.getTotalPages());
+
+        java.util.Set<Long> registeredEventIds = Collections.emptySet();
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
+            registeredEventIds = new HashSet<>(
+                    registrationRepository.findActiveEventIdsByAttendeeEmail(authentication.getName()));
+        }
+        model.addAttribute("registeredEventIds", registeredEventIds);
+
         return "events/index";
     }
 
@@ -65,14 +77,14 @@ public class PublicEventController {
         model.addAttribute("waitlistCount", waitlistCount);
         model.addAttribute("form", new RegistrationFormDto());
 
-        // If the user is logged in, check if they are already registered
-        if (authentication != null && authentication.isAuthenticated()) {
+        boolean isUserRegistered = false;
+        if (authentication != null && authentication.isAuthenticated()
+                && !"anonymousUser".equals(authentication.getPrincipal())) {
             String email = authentication.getName();
-            userRepository.findByEmail(email).ifPresent(user -> {
-                // You can lookup by email in attendees — left as TODO for Ahmed
-                model.addAttribute("isUserRegistered", false); // placeholder
-            });
+            isUserRegistered = registrationRepository
+                    .countActiveByEventIdAndAttendeeEmail(id, email) > 0;
         }
+        model.addAttribute("isUserRegistered", isUserRegistered);
 
         return "events/show";
     }

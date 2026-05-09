@@ -3,17 +3,28 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>404 – Not Found | Evently</title>
+    <title>Page Not Found — Evently</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" th:href="@{/css/app.css}"/>
+    <style>
+        body { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; margin:0; font-family:'Poppins',sans-serif; background:#f7f8fc; }
+        .error-box { text-align:center; padding:3rem 2rem; background:#fff; border-radius:1rem; box-shadow:0 4px 24px rgba(0,0,0,0.08); max-width:480px; width:90%; }
+        .error-code { font-size:5rem; font-weight:700; color:#f59e0b; margin:0; line-height:1; }
+        .error-title { font-size:1.5rem; font-weight:600; margin:.5rem 0 1rem; color:#1a202c; }
+        .error-msg { color:#666; margin-bottom:2rem; }
+        .btn { display:inline-block; padding:.7rem 1.5rem; background:#4f46e5; color:#fff; border-radius:.5rem; text-decoration:none; font-weight:500; transition:background .2s; }
+        .btn:hover { background:#4338ca; }
+    </style>
 </head>
 <body>
-<div class="error-container" style="text-align:center; padding:80px 20px;">
-    <h1>404</h1>
-    <h2>Page Not Found</h2>
-    <p th:text="${message != null ? message : 'The page or resource you requested could not be found.'}">
-        The page or resource you requested could not be found.
-    </p>
-    <a th:href="@{/dashboard}">Back to Home</a>
-</div>
+    <div class="error-box">
+        <p class="error-code">404</p>
+        <h1 class="error-title">Page Not Found</h1>
+        <p class="error-msg" th:text="${message ?: 'The page or resource you were looking for could not be found.'}">
+            The page or resource you were looking for could not be found.
+        </p>
+        <a th:href="@{/events}" class="btn">Browse Events</a>
+    </div>
 </body>
 </html>

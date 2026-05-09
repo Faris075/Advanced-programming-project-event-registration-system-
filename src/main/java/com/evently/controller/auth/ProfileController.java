@@ -44,8 +44,8 @@ public class ProfileController {
      * Get the currently logged-in user from the database.
      */
     private User getCurrentUser() {
-        String email = (String) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found in database"));
     }
@@ -161,6 +161,13 @@ public class ProfileController {
                                  HttpSession session,
                                  RedirectAttributes redirectAttributes) {
         User user = getCurrentUser();
+
+        // Admins cannot delete their own account via this endpoint
+        if (user.isAdmin() || user.isSuperAdmin()) {
+            redirectAttributes.addFlashAttribute("error",
+                    "Admin accounts cannot be deleted through the profile page.");
+            return "redirect:/profile";
+        }
 
         // Verify password
         if (!passwordEncoder.matches(password, user.getPassword())) {

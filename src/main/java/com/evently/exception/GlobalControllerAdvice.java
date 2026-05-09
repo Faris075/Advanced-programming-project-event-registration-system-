@@ -1,6 +1,5 @@
 package com.evently.exception;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -9,11 +8,15 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import jakarta.persistence.EntityNotFoundException;
+
 /**
  * Global exception handler.
  *
- * Maps well-known exceptions to the correct error pages so no raw stack trace
- * is ever shown to the user.
+ * Maps well-known application exceptions to the correct error views.
+ * Deliberately does NOT catch Spring framework/MVC internal exceptions
+ * (BindException, MethodArgumentNotValidException, etc.) so they are
+ * handled by Spring's own infrastructure.
  *
  * OWNER: Faris
  */
@@ -38,9 +41,15 @@ public class GlobalControllerAdvice {
         return "error/duplicate";
     }
 
-    @ExceptionHandler(Exception.class)
+    /**
+     * Catch-all for unhandled RuntimeExceptions thrown by application code.
+     * Intentionally limited to RuntimeException — Spring MVC / Thymeleaf
+     * internal exceptions (which extend Exception but not RuntimeException)
+     * are left for Spring's DefaultHandlerExceptionResolver.
+     */
+    @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleGeneric(Exception ex, Model model) {
+    public String handleGeneric(RuntimeException ex, Model model) {
         log.error("Unexpected error", ex);
         model.addAttribute("message", "An unexpected error occurred. Please try again.");
         return "error/500";

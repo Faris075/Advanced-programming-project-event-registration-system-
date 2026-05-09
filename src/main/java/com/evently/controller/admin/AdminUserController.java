@@ -44,8 +44,8 @@ public class AdminUserController {
      * Get the currently logged-in user from the database.
      */
     private User getCurrentUser() {
-        String email = (String) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Authenticated user not found"));
     }

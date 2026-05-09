@@ -50,9 +50,10 @@ public class RegistrationController {
                 redirectAttributes.addFlashAttribute("successMessage",
                         "You're on the waitlist at position #" + reg.getWaitlistPosition()
                                 + ". We'll notify you if a spot opens up.");
+                return "redirect:/events/" + eventId;
             } else {
-                redirectAttributes.addFlashAttribute("successMessage",
-                        "You're registered! We'll see you at the event.");
+                // CONFIRMED → show payment page
+                return "redirect:/register/payment/" + reg.getId();
             }
         } catch (DuplicateRegistrationException e) {
             redirectAttributes.addFlashAttribute("errorMessage",
