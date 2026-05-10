@@ -54,6 +54,11 @@ public class RegistrationService {
         throw new IllegalStateException("Event is not open for registration.");
     }
 
+    // Block registration when the event has already started or is less than 2 hours away.
+    if (event.getDateTime().isBefore(LocalDateTime.now().plusHours(2))) {
+        throw new IllegalStateException("Registration is closed. The event starts in less than 2 hours or has already passed.");
+    }
+
     // Normalize email
     String normalizedEmail = form.getEmail().trim().toLowerCase();
 
@@ -68,8 +73,9 @@ public class RegistrationService {
                             .build()
             ));
 
-    // Duplicate check — reject if already confirmed or waitlisted.
-        if (registrationRepository.findByEventIdAndAttendeeId(eventId, attendee.getId()).isPresent()) {
+    // Duplicate check — only reject if there is an active (non-cancelled) registration.
+    // A previously cancelled registration allows the user to register again.
+        if (registrationRepository.findActiveByEventIdAndAttendeeId(eventId, attendee.getId()).isPresent()) {
             throw new DuplicateRegistrationException(eventId, attendee.getEmail());
         }
 

@@ -1,5 +1,6 @@
 package com.evently.controller;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashSet;
 
@@ -39,8 +40,8 @@ public class PublicEventController {
     public String listEvents(@RequestParam(defaultValue = "0") int page,
             Model model, Authentication authentication) {
         Page<Event> events = eventRepository
-                .findByStatusOrderByDateTimeAsc(EventStatus.PUBLISHED,
-                        PageRequest.of(page, 10));
+                .findByStatusAndDateTimeAfterOrderByDateTimeAsc(EventStatus.PUBLISHED,
+                        LocalDateTime.now(), PageRequest.of(page, 10));
 
         model.addAttribute("events", events);
         model.addAttribute("currentPage", page);
@@ -63,7 +64,8 @@ public class PublicEventController {
         Event event = eventRepository.findById(id)
             .orElseThrow(() -> new EventNotFoundException("Event not found: " + id));
 
-        if (event.getStatus() != EventStatus.PUBLISHED) {
+        if (event.getStatus() != EventStatus.PUBLISHED
+                || event.getDateTime().isBefore(LocalDateTime.now())) {
             return "redirect:/events";
         }
 

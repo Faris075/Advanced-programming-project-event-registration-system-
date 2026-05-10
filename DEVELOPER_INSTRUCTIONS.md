@@ -341,16 +341,11 @@ Create repository interfaces in `com.evently.repository`:
 
 - [ ] If included: generate a UUID token, store in a `password_reset_tokens` table with expiry, send email with reset link, validate token on arrival, clear token after use.
 
-#### Phase 6 — Profile Management
+#### Phase 6 — Profile Management ✅ COMPLETE
 
-- [ ] Create `ProfileController.java`:
-  - `GET /profile` → show profile page for authenticated user
-  - `POST /profile/update` → update name and email (check email uniqueness if changed)
-  - `POST /profile/password` → verify current password, set new BCrypt hash
-  - `POST /profile/delete` → verify password, delete account, invalidate session, redirect to home
-  - `POST /profile/currency` → update preferred currency
-- [ ] Create `templates/profile/index.html` — three sections: update details, change password, danger zone (delete account)
-- [ ] Create `ProfileDto.java` and `PasswordChangeDto.java`
+- [x] `ProfileController.java` at `com.evently.controller.auth` — handles GET /profile, POST /profile/update, POST /profile/password, POST /profile/security-question, POST /profile/currency, POST /profile/delete
+- [x] `templates/auth/profile.html` — Personal Info, Change Password, Security Question, Currency Preference, Danger Zone (delete account, hidden for admins)
+- [x] Controller uses `@RequestParam` directly — no separate DTO files needed (controller-level validation in place)
 
 #### Phase 7 — Admin: User Management Views
 

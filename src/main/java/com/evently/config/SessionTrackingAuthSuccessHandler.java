@@ -15,10 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Extends Spring Security's default success handler to record a row in the
- * {@code sessions} table after every successful login.
- *
- * <p>Inherits the redirect-to-{@code /events} behaviour from
- * {@link SimpleUrlAuthenticationSuccessHandler}.
+ * {@code sessions} table after every successful login, and to redirect
+ * admins to the admin panel and regular users to the events page.
  *
  * OWNER: Alei
  */
@@ -29,8 +27,7 @@ public class SessionTrackingAuthSuccessHandler extends SimpleUrlAuthenticationSu
     private final SessionService sessionService;
 
     public SessionTrackingAuthSuccessHandler(SessionService sessionService) {
-        super("/events");          // default success URL
-        setAlwaysUseDefaultTargetUrl(true);
+        super("/events");          // fallback default
         this.sessionService = sessionService;
     }
 
@@ -52,6 +49,12 @@ public class SessionTrackingAuthSuccessHandler extends SimpleUrlAuthenticationSu
             // Never block login due to session-tracking failure.
             log.error("Failed to record session for user {}: {}", email, e.getMessage());
         }
+
+        // Admins go to the admin panel; everyone else goes to the events page.
+        boolean isAdmin = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        setDefaultTargetUrl(isAdmin ? "/admin" : "/events");
+        setAlwaysUseDefaultTargetUrl(true);
 
         super.onAuthenticationSuccess(request, response, authentication);
     }

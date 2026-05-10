@@ -32,6 +32,15 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
     Optional<Registration> findByEventIdAndAttendeeId(Long eventId, Long attendeeId);
 
     /**
+     * Returns the active (non-cancelled) registration for an attendee on an event.
+     * Used to allow re-registration after a previous cancellation.
+     */
+    @Query("SELECT r FROM Registration r WHERE r.event.id = :eventId AND r.attendee.id = :attendeeId "
+            + "AND r.status <> com.evently.model.RegistrationStatus.CANCELLED")
+    Optional<Registration> findActiveByEventIdAndAttendeeId(@Param("eventId") Long eventId,
+            @Param("attendeeId") Long attendeeId);
+
+    /**
      * User's registration history, newest first. Eagerly loads event and attendee
      * to avoid LazyInitializationException when open-in-view is false.
      */

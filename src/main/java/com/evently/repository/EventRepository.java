@@ -30,6 +30,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      */
     List<Event> findByStatusOrderByDateTimeAsc(EventStatus status);
 
+    /**
+     * Public listing – only PUBLISHED events whose date is strictly in the future.
+     * Used to hide past events from the public events page.
+     */
+    Page<Event> findByStatusAndDateTimeAfterOrderByDateTimeAsc(
+            EventStatus status, LocalDateTime dateTime, Pageable pageable);
+
     long countByStatus(EventStatus status);
 
     List<Event> findTop5ByOrderByCreatedAtDesc();
